@@ -1,5 +1,5 @@
 import App from '@/App'
 
-export default function Page() {
+export default function Main() {
   return <App />
 }

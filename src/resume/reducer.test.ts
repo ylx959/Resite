@@ -35,7 +35,7 @@ describe('resumeReducer', () => {
       { type: 'items', sectionId: 'projects', op: { op: 'move', id: entry.id, delta: -1 } },
     )
     const projects = next.sections.find((s) => s.id === 'projects')!
-    expect(projects.kind === 'timeline' && projects.items.map((i) => i.title)).toEqual(['Lantern', 'Tidewater'])
+    expect(projects.kind === 'timeline' && projects.items.map((i) => i.title)).toEqual(['Lantern', 'SparkCheck'])
   })
 
   it('applies body only to text sections and intro only to people sections', () => {

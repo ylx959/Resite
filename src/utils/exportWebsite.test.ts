@@ -24,7 +24,7 @@ describe('buildSite', () => {
   it('renders a complete, self-contained page with relative asset paths', () => {
     const page = html(sampleResume)
     expect(page.startsWith('<!doctype html>\n<html lang="en">')).toBe(true)
-    expect(page).toContain('<title>Ines Varga-Holm — Frontend Engineer</title>')
+    expect(page).toContain('<title>Jonny — AI Engineer</title>')
     expect(page).toContain('href="assets/style.css"')
     expect(page).toContain('src="assets/script.js"')
     expect(page).not.toMatch(/(src|href)="\/(?!\/)/) // no root-absolute paths
@@ -124,7 +124,7 @@ describe('buildSite', () => {
 
   it('writes deployment instructions into the README', () => {
     const readme = buildSite(sampleResume).find((f) => f.path === 'README.md')!.content as string
-    expect(readme).toContain('# Ines Varga-Holm — Frontend Engineer')
+    expect(readme).toContain('# Jonny — AI Engineer')
     expect(readme).toContain('vercel.com/drop')
   })
 })

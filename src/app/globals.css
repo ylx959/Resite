@@ -1,0 +1,59 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, monospace;
+  /* Same paper and accent as the resume template. */
+  --color-paper: #fcfcfc;
+  --color-accent: #ff4a00;
+  --color-accent-hover: #e04100;
+}
+
+@keyframes sheet-in {
+  from { translate: 2rem 0; opacity: 0; }
+  to { translate: 0 0; opacity: 1; }
+}
+
+/* The app is a fixed-height shell; only its panes scroll. */
+html, body {
+  height: 100%;
+  overflow: hidden;
+  overscroll-behavior: none;
+}
+
+html {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+::selection {
+  color: white;
+  background-color: var(--color-accent);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+}
+
+@keyframes capsule-in {
+  from { translate: -0.75rem 0; opacity: 0; }
+  to { translate: 0 0; opacity: 1; }
+}
+
+/* While the editor panel is being resized: keep the iframe from eating pointer events,
+   and show the drag cursor everywhere. */
+[data-resizing] { cursor: col-resize; user-select: none; }
+[data-resizing] iframe { pointer-events: none; }
+[data-collapsing] > main { opacity: 0.4; }
+
+/* Browser autofill paints filled inputs light blue. Keep our own field colors:
+   the UA background is !important, so delay its transition forever instead
+   (box-shadow tricks would wipe out Tailwind's focus rings). */
+input:autofill,
+input:-webkit-autofill,
+textarea:autofill,
+textarea:-webkit-autofill {
+  -webkit-text-fill-color: var(--color-zinc-900);
+  caret-color: var(--color-zinc-900);
+  transition: background-color 600000s 0s, color 600000s 0s;
+}

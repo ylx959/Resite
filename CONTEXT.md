@@ -3,7 +3,7 @@
 A browser-only tool that turns a **Resume** (JSON data) into a static resume website.
 The design is the myResume site (`../myResume`), rewritten as a data-driven **Template**.
 
-The exact data shape lives in `src/types/resume.ts`; this file defines the terms.
+The exact data shape lives in `web/src/types/resume.ts`; this file defines the terms.
 
 ## Glossary
 
@@ -33,14 +33,14 @@ The exact data shape lives in `src/types/resume.ts`; this file defines the terms
 
 ## Modules
 
-**`resumeReducer(resume, action)`** (`src/resume/reducer.ts`): every edit. Pure; ids are created by callers. List edits share one `ListOp` shape (add / update / remove / move).
+**`resumeReducer(resume, action)`** (`web/src/resume/reducer.ts`): every edit. Pure; ids are created by callers. List edits share one `ListOp` shape (add / update / remove / move).
 
-**`parseResume(unknown)`** (`src/utils/validation.ts`): the only gate for untrusted data (imports, localStorage). Fills defaults, regenerates bad ids, rejects wrong types with a path-precise message.
+**`parseResume(unknown)`** (`web/src/utils/validation.ts`): the only gate for untrusted data (imports, localStorage). Fills defaults, regenerates bad ids, rejects wrong types with a path-precise message.
 
-**`buildSite(resume)` / `zipSite(files)`** (`src/utils/exportWebsite.ts`): Resume in, site files out; then the ZIP. `renderToStaticMarkup` of the template — no string templating of user content. Data-URL images become files.
+**`buildSite(resume)` / `zipSite(files)`** (`web/src/utils/exportWebsite.ts`): Resume in, site files out; then the ZIP. `renderToStaticMarkup` of the template — no string templating of user content. Data-URL images become files.
 
-**`safeHref` / `safeImageSrc`** (`src/utils/url.ts`): every URL the template renders passes through these.
+**`safeHref` / `safeImageSrc`** (`web/src/utils/url.ts`): every URL the template renders passes through these.
 
-**`anchor` / `anchorPathOf` / `findAnchor`** (`src/templates/anchors.ts`): Edit anchors — mark a region, read the focused field's path, resolve a path to the deepest rendered element.
+**`anchor` / `anchorPathOf` / `findAnchor`** (`web/src/templates/anchors.ts`): Edit anchors — mark a region, read the focused field's path, resolve a path to the deepest rendered element.
 
-**`getTemplate(id)`** (`src/templates/index.ts`): the template registry. Add a design by adding an entry.
+**`getTemplate(id)`** (`web/src/templates/index.ts`): the template registry. Add a design by adding an entry.

@@ -11,15 +11,26 @@ Light theme only.
 ```bash
 npm install
 npm run dev        # http://localhost:3000
+./backend/dev.sh   # http://localhost:8000 (creates .venv, installs deps, runs uvicorn)
 ```
 
 Other commands:
 
-| Command             | What it does                                   |
-| ------------------- | ---------------------------------------------- |
-| `npm run build`     | Static build of the creator into `out/`        |
-| `npm run typecheck` | TypeScript check                               |
-| `npm run test:run`  | Unit tests (validation, editing, ZIP export)   |
+| Command               | What it does                                          |
+| --------------------- | ----------------------------------------------------- |
+| `npm run dev:backend` | FastAPI backend via `backend/dev.sh` (:8000)          |
+| `npm run build`       | Static build of the creator into `web/out/`      |
+| `npm run typecheck`   | TypeScript check (all workspaces)                     |
+| `npm run test:run`    | Unit tests (validation, editing, ZIP export)          |
+
+## Repository layout
+
+npm workspaces monorepo:
+
+```
+web/       @resite/web — the Next.js creator (everything below lives here)
+backend/   FastAPI API server (placeholder: GET /health, docs at /docs)
+```
 
 ## Use it
 
@@ -51,13 +62,13 @@ Resite never deploys anything for you. Each person hosts their own site.
 
 ## Your own resume
 
-`examples/raymond-yang.resume.json` is the myResume content in this format.
+`web/examples/raymond-yang.resume.json` is the myResume content in this format.
 Choose **Import** in the app to load it.
 
 ## How it's built
 
-Next.js (static export), React, TypeScript, Tailwind CSS, JSZip. No backend, no
-database, no accounts: everything runs in the browser.
+Next.js (static export), React, TypeScript, Tailwind CSS, JSZip. The creator runs
+entirely in the browser. Paths below are relative to `web/`.
 
 - `src/types/resume.ts`: the resume data shape
 - `src/resume/`: editing logic (pure reducer, section kinds, sample data)

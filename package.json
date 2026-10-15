@@ -3,29 +3,14 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
+  "workspaces": [
+    "web"
+  ],
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "npx serve out",
-    "typecheck": "tsc --noEmit",
-    "test": "vitest",
-    "test:run": "vitest run"
-  },
-  "dependencies": {
-    "@gsap/react": "^2.1.2",
-    "gsap": "^3.15.0",
-    "jszip": "^3.10.2",
-    "next": "16.4.1",
-    "react": "^19.3.1",
-    "react-dom": "^19.3.1"
-  },
-  "devDependencies": {
-    "@tailwindcss/postcss": "^4.3.3",
-    "@types/node": "^26.6.5",
-    "@types/react": "^19.3.0",
-    "@types/react-dom": "^19.3.0",
-    "tailwindcss": "^4.3.3",
-    "typescript": "^5.9.3",
-    "vitest": "^5.0.4"
+    "dev": "npm run dev -w @resite/web",
+    "dev:backend": "./backend/dev.sh",
+    "build": "npm run build -w @resite/web",
+    "typecheck": "npm run typecheck -w @resite/web",
+    "test:run": "npm run test:run -w @resite/web"
   }
 }

@@ -15,6 +15,7 @@ describe('parseResume', () => {
     expect(result.ok).toBe(true)
     if (!result.ok) return
     expect(result.resume.settings).toEqual({ template: 'minimal', accent: '#ff4a00', lang: 'en' })
+    expect(result.resume.profile.showIcon).toBe(true)
     const section = result.resume.sections[0]!
     expect(section.visible).toBe(true)
     expect(section.kind === 'timeline' && section.items[0]).toMatchObject({ title: 'Kiln & Co', highlights: [], current: false })

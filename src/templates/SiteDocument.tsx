@@ -32,7 +32,14 @@ export function SiteDocument({
         <meta property="og:title" content={title} />
         <meta property="og:description" content={description} />
         <meta name="theme-color" content="#fcfcfc" />
-        {icon ? <link rel="icon" href={icon} /> : <link rel="icon" type="image/svg+xml" href={DEFAULT_ICON} />}
+        {!resume.profile.showIcon ? (
+          // An empty icon, so the browser doesn't fall back to requesting /favicon.ico.
+          <link rel="icon" href="data:," />
+        ) : icon ? (
+          <link rel="icon" href={icon} />
+        ) : (
+          <link rel="icon" type="image/svg+xml" href={DEFAULT_ICON} />
+        )}
         <link rel="stylesheet" href="assets/style.css" />
         <script src="assets/script.js" />
       </head>

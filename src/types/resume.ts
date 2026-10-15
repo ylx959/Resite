@@ -35,6 +35,8 @@ export type Profile = {
    * Image URL or `data:` URL. Empty → the default mark.
    */
   icon: string
+  /** Off → no icon beside the name and no favicon. */
+  showIcon: boolean
   /** Header links beside the name. */
   links: Link[]
 }

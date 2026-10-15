@@ -34,7 +34,7 @@ export function MinimalResume({ resume }: { resume: Resume }) {
             <a className="cv-name" href="#top" {...anchor('name')}>
               {profile.name || 'Your name'}
             </a>
-            <Mark icon={profile.icon} />
+            {profile.showIcon && <Mark icon={profile.icon} />}
           </div>
           {profile.title && (
             <p className="cv-title" {...anchor('title')}>

@@ -10,6 +10,7 @@ export const sampleResume: Resume = {
     name: 'Jonny',
     title: 'AI Engineer',
     icon: '',
+    showIcon: true,
     links: [
       { id: 'nav-work', label: 'My work', href: 'https://github.com/' },
       { id: 'nav-notes', label: 'Notes', href: '#', icon: 'note' },
@@ -23,7 +24,7 @@ export const sampleResume: Resume = {
       title: 'About',
       visible: true,
       body:
-        'I build interfaces for data-heavy products: maps, ledgers, dashboards. I care about load time, keyboard access, and type that reads well at 14px.\n\nCurrently based in Lisbon, working with teams across Europe.',
+        'I have spent over four years studying machine learning and deep learning, developing strong proficiency in PyTorch and applying models to real-world industrial applications. I am passionate about building highly accurate models and optimizing workflows for greater efficiency.',
     },
     {
       id: 'experience',

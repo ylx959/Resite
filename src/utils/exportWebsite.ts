@@ -42,7 +42,7 @@ export function buildSite(resume: Resume): SiteFile[] {
     { path: 'index.html', content: `<!doctype html>\n${html}\n` },
     { path: 'assets/style.css', content: template.css.trimStart() },
     { path: 'assets/script.js', content: template.script },
-    ...(safeImageSrc(linked.profile.icon) ? [] : [{ path: DEFAULT_ICON, content: MARK_SVG }]),
+    ...(linked.profile.showIcon && !safeImageSrc(linked.profile.icon) ? [{ path: DEFAULT_ICON, content: MARK_SVG }] : []),
     ...images,
     { path: 'README.md', content: readme(siteTitle(resume)) },
   ]

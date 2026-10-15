@@ -186,6 +186,7 @@ const resume: Decoder<Resume> = (value, path) => {
       name: text('', 200)(profile.name, `${path}.profile.name`),
       title: text('', 200)(profile.title, `${path}.profile.title`),
       icon: text('', MAX_IMAGE)(profile.icon, `${path}.profile.icon`),
+      showIcon: bool(true)(profile.showIcon, `${path}.profile.showIcon`),
       links: ids(link)(profile.links, `${path}.profile.links`),
     },
     sections: ids(section)(o.sections, `${path}.sections`),

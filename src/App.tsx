@@ -19,7 +19,7 @@ import { downloadBlob } from '@/utils/download'
 import { exportWebsite } from '@/utils/exportWebsite'
 import { parseResumeJson } from '@/utils/validation'
 
-type Notice = { tone: 'ok' | 'error'; text: string }
+type Notice = { tone: 'ok' | 'error'; text: string; open: boolean }
 
 const fileSlug = (resume: Resume) =>
   resume.profile.name
@@ -41,17 +41,18 @@ export default function App() {
   const shell = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
-    if (!notice) return
-    const timer = window.setTimeout(() => setNotice(null), notice.tone === 'error' ? 8000 : 4000)
+    if (!notice?.open) return
+    // Collapse, keeping the text so it stays visible while the bar closes.
+    const timer = window.setTimeout(() => setNotice((n) => n && { ...n, open: false }), notice.tone === 'error' ? 8000 : 4000)
     return () => window.clearTimeout(timer)
   }, [notice])
 
   const importJson = useCallback(
     async (file: File) => {
       const result = parseResumeJson(await file.text())
-      if (!result.ok) return setNotice({ tone: 'error', text: `Couldn't import ${file.name}: ${result.error}` })
+      if (!result.ok) return setNotice({ tone: 'error', text: `Couldn't import ${file.name}: ${result.error}`, open: true })
       dispatch({ type: 'replace', resume: result.resume })
-      setNotice({ tone: 'ok', text: `Imported ${file.name}.` })
+      setNotice({ tone: 'ok', text: `Imported ${file.name}.`, open: true })
     },
     [dispatch],
   )
@@ -65,14 +66,14 @@ export default function App() {
     exportWebsite: async () => {
       try {
         downloadBlob(await exportWebsite(resume), 'resume-website.zip')
-        setNotice({ tone: 'ok', text: 'Website downloaded. Open "How to publish" to put it online.' })
+        setNotice({ tone: 'ok', text: 'Website downloaded. Open "How to publish" to put it online.', open: true })
       } catch {
-        setNotice({ tone: 'error', text: 'Packaging the website failed. Try again, or remove recently uploaded images.' })
+        setNotice({ tone: 'error', text: 'Packaging the website failed. Try again, or remove recently uploaded images.', open: true })
       }
     },
     reset: () => {
       dispatch({ type: 'replace', resume: sampleResume })
-      setNotice({ tone: 'ok', text: 'Reset to the sample resume.' })
+      setNotice({ tone: 'ok', text: 'Reset to the sample resume.', open: true })
     },
     openGuide: () => setGuideOpen(true),
   }
@@ -95,16 +96,25 @@ export default function App() {
           />
         </div>
 
-        {notice && (
-          <div
-            role={notice.tone === 'error' ? 'alert' : 'status'}
-            className={`border-b px-5 py-2.5 text-[13px] ${
-              notice.tone === 'error' ? 'border-red-200 bg-red-50 text-red-800' : 'border-emerald-200 bg-emerald-50 text-emerald-900'
-            }`}
-          >
-            {notice.text}
+        {/* Always mounted so the bar can ease open and closed by animating its row height. */}
+        <div
+          className={`grid shrink-0 transition-[grid-template-rows] duration-300 ease-out motion-reduce:transition-none ${
+            notice?.open ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]'
+          }`}
+        >
+          <div className="min-h-0 overflow-hidden" inert={!notice?.open}>
+            {notice && (
+              <div
+                role={notice.tone === 'error' ? 'alert' : 'status'}
+                className={`border-b px-5 py-2.5 text-[13px] ${
+                  notice.tone === 'error' ? 'border-red-200 bg-red-50 text-red-800' : 'border-emerald-200 bg-emerald-50 text-emerald-900'
+                }`}
+              >
+                {notice.text}
+              </div>
+            )}
           </div>
-        )}
+        </div>
 
         <div
           ref={shell}

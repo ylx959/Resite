@@ -100,6 +100,15 @@ describe('buildSite', () => {
     expect(page).not.toContain('data:image')
   })
 
+  it('leaves the icon out entirely when it is switched off', () => {
+    const resume = { ...sampleResume, profile: { ...sampleResume.profile, showIcon: false } }
+    const files = buildSite(resume)
+    const page = html(resume)
+    expect(files.map((f) => f.path)).not.toContain('assets/images/favicon.svg')
+    expect(page).not.toContain('cv-mark')
+    expect(page).toContain('<link rel="icon" href="data:,"/>')
+  })
+
   it('drops an unsafe icon URL and falls back to the default mark', () => {
     const page = html({ ...sampleResume, profile: { ...sampleResume.profile, icon: 'javascript:alert(1)' } })
     expect(page).not.toContain('javascript:')

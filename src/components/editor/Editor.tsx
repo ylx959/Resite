@@ -6,7 +6,7 @@ import { anchor } from '@/templates/anchors'
 import { createItem } from '@/resume/sectionKinds'
 import type { Link, Resume } from '@/types/resume'
 import { fileToIcon } from '@/utils/images'
-import { TextField } from '../ui/Field'
+import { Switch, TextField } from '../ui/Field'
 import { Mark } from '../ui/icons'
 import { AddSection } from './AddSection'
 import { ImageField } from './ImageField'
@@ -29,14 +29,19 @@ export function Editor({ resume }: { resume: Resume }) {
             <TextField label="Title" value={profile.title} onChange={(title) => dispatch({ type: 'profile', patch: { title } })} placeholder="Product Designer" {...anchor('title')} />
           </div>
           <div className="mt-3" {...anchor('icon')}>
-            <ImageField
-              label="Icon"
-              value={profile.icon}
-              onChange={(icon) => dispatch({ type: 'profile', patch: { icon } })}
-              process={fileToIcon}
-              placeholder={<Mark className="h-3 w-auto" />}
-              helper="Shown beside your name and as the browser-tab icon. Empty uses the default mark."
-            />
+            <Switch label="Show icon" checked={profile.showIcon} onChange={(showIcon) => dispatch({ type: 'profile', patch: { showIcon } })} />
+            {profile.showIcon && (
+              <div className="mt-3">
+                <ImageField
+                  label="Icon"
+                  value={profile.icon}
+                  onChange={(icon) => dispatch({ type: 'profile', patch: { icon } })}
+                  process={fileToIcon}
+                  placeholder={<Mark className="h-3 w-auto" />}
+                  helper="Shown beside your name and as the browser-tab icon. Empty uses the default mark."
+                />
+              </div>
+            )}
           </div>
           <div className="mt-5" {...anchor('links')}>
             <p className="mb-2 text-xs font-medium text-zinc-500">Header links</p>

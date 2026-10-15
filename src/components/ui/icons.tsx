@@ -1,4 +1,5 @@
 import type { ReactNode, SVGProps } from 'react'
+import { MARK_COLOR, MARK_PATH, MARK_VIEWBOX } from '@/templates/mark'
 
 /** 16px line icons, stroke 1.5, drawn to match the resume template's link icons. */
 function Svg({ children, ...props }: SVGProps<SVGSVGElement> & { children: ReactNode }) {
@@ -81,11 +82,11 @@ export const ImageIcon = (p: P) => (
 )
 export const ExternalArrow = (p: P) => <Svg {...p}><path d="M12 10V4m0 0H6m6 0l-7.833 7.833" /></Svg>
 
-/** The myResume mark: a dark block with a light chevron. */
+/** The app mark: an orange "Hired" badge. */
 export const Mark = ({ className }: { className?: string }) => (
-  <svg viewBox="0 0 121 92" aria-hidden="true" className={className}>
-    <rect width="121" height="92" className="fill-zinc-900" />
-    <path d="M61.5 56L6.50739 5.75L116.493 5.74999L61.5 56Z" className="fill-paper" />
+  <svg viewBox={MARK_VIEWBOX} aria-hidden="true" className={className}>
+    <rect width="38" height="24" rx="6" fill={MARK_COLOR} />
+    <path d={MARK_PATH} fill="white" />
   </svg>
 )
 

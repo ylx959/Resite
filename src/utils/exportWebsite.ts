@@ -3,6 +3,7 @@ import { createElement } from 'react'
 import { renderToStaticMarkup } from 'react-dom/server'
 import { deployNotes, deploySteps } from '@/content/deployGuide'
 import { stripAnchors } from '@/templates/anchors'
+import { MARK_SVG } from '@/templates/mark'
 import { siteDescription, siteTitle } from '@/templates/content'
 import { getTemplate } from '@/templates'
 import type { Resume } from '@/types/resume'
@@ -41,7 +42,7 @@ export function buildSite(resume: Resume): SiteFile[] {
     { path: 'index.html', content: `<!doctype html>\n${html}\n` },
     { path: 'assets/style.css', content: template.css.trimStart() },
     { path: 'assets/script.js', content: template.script },
-    ...(safeImageSrc(linked.profile.icon) ? [] : [{ path: DEFAULT_ICON, content: FAVICON }]),
+    ...(safeImageSrc(linked.profile.icon) ? [] : [{ path: DEFAULT_ICON, content: MARK_SVG }]),
     ...images,
     { path: 'README.md', content: readme(siteTitle(resume)) },
   ]
@@ -62,12 +63,6 @@ export async function exportWebsite(resume: Resume): Promise<Blob> {
 }
 
 // --- Internals ---
-
-const FAVICON = `<svg width="121" height="92" viewBox="0 0 121 92" fill="none" xmlns="http://www.w3.org/2000/svg">
-<rect width="121" height="92" fill="#18181b"/>
-<path d="M61.5 56L6.50739 5.75L116.493 5.74999L61.5 56Z" fill="#fcfcfc"/>
-</svg>
-`
 
 const DATA_URL = /^data:image\/(png|jpeg|gif|webp);base64,([a-z0-9+/=]+)$/i
 const EXTENSIONS: Record<string, string> = { png: 'png', jpeg: 'jpg', gif: 'gif', webp: 'webp' }

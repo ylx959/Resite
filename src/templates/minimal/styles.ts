@@ -76,20 +76,17 @@ button { font: inherit; color: inherit; background: none; border: 0; }
 
 /* Springy hover/tap, like motion's whileHover / whileTap. */
 .cv-mark {
-  height: 0.875rem;
+  height: 0.9625rem;
   width: auto;
-  scale: 0.8;
   cursor: default;
   user-select: none;
   -webkit-tap-highlight-color: transparent;
   transition: scale 300ms cubic-bezier(0.34, 1.56, 0.64, 1);
 }
-.cv-mark:hover { scale: 1; }
-.cv-mark:active { scale: 0.7; transition-duration: 120ms; }
+.cv-mark:hover { scale: 0.9; }
+.cv-mark:active { scale: 0.8; transition-duration: 120ms; }
 @media (prefers-reduced-motion: reduce) { .cv-mark { transition: none; } }
 img.cv-mark { max-width: 1.5rem; object-fit: contain; }
-.cv-mark .ink { fill: var(--ink); }
-.cv-mark .paper { fill: var(--lightest); }
 
 /* --- Sections ---------------------------------------------------------- */
 

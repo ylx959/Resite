@@ -95,7 +95,7 @@ export function EditorLine({ root, path }: { root: HTMLElement | null; path: Anc
       style={{ visibility: 'hidden', opacity: 0 }}
       className="pointer-events-none absolute inset-x-0 top-0 h-px bg-accent"
     >
-      <span className="absolute top-full right-[calc(var(--scrollbar,0px)+1rem)] bg-accent px-1.5 pt-[3px] pb-[2px] font-mono text-[10px] leading-none tracking-[0.08em] text-white uppercase">
+      <span className="absolute top-full right-[calc(var(--scrollbar,0px)+2rem)] bg-accent px-1.5 pt-[3px] pb-[2px] font-mono text-[10px] leading-none tracking-[0.08em] text-white uppercase">
         Editing
       </span>
     </div>

@@ -58,7 +58,7 @@ export function Toolbar({ save, actions }: { save: SaveStatus; actions: ToolbarA
 
       {/* Center: brand and save state. */}
       <div className="flex min-w-0 items-center gap-2.5 md:justify-self-center">
-        <Mark className="h-3 w-auto shrink-0" />
+        <Mark className="h-[13.2px] w-auto shrink-0" />
         <h1 className="truncate text-[14px] font-semibold tracking-tight text-zinc-900">Resite</h1>
         <SaveIndicator save={save} />
       </div>

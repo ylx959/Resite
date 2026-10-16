@@ -80,22 +80,7 @@ export function Editor({ resume }: { resume: Resume }) {
 
       <Group title="Site" hint="Applies to the exported website.">
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-          <div className="flex flex-col gap-1.5">
-            <label htmlFor="accent" className="text-xs font-medium text-zinc-500">
-              Accent color
-            </label>
-            <div className="flex h-9 items-center gap-2 rounded-lg bg-white px-1.5 ring-1 ring-zinc-900/10 focus-within:ring-2 focus-within:ring-accent/70">
-              <input
-                id="accent"
-                type="color"
-                value={settings.accent}
-                onChange={(e) => dispatch({ type: 'settings', patch: { accent: e.target.value } })}
-                className="size-6 cursor-pointer rounded border-0 bg-transparent p-0"
-              />
-              <span className="font-mono text-[13px] text-zinc-600">{settings.accent}</span>
-            </div>
-            <p className="text-xs text-zinc-400">Used for text selection and focus rings.</p>
-          </div>
+          <AccentField accent={settings.accent} onChange={(accent) => dispatch({ type: 'settings', patch: { accent } })} />
           <TextField
             label="Page language"
             value={settings.lang}
@@ -105,6 +90,56 @@ export function Editor({ resume }: { resume: Resume }) {
           />
         </div>
       </Group>
+    </div>
+  )
+}
+
+/** `#abc`, `ABC`, ` #aabbcc ` → `#aabbcc`; anything else → null. */
+function toHex(input: string): string | null {
+  const hex = /^#?([0-9a-f]{3}|[0-9a-f]{6})$/i.exec(input.trim())?.[1]
+  if (!hex) return null
+  return `#${(hex.length === 3 ? hex.replace(/./g, (c) => c + c) : hex).toLowerCase()}`
+}
+
+/** Swatch picker plus a hex field you can type or paste into; commits only valid colors. */
+function AccentField({ accent, onChange }: { accent: string; onChange: (accent: string) => void }) {
+  const [draft, setDraft] = useState(accent)
+  const [synced, setSynced] = useState(accent)
+  if (accent !== synced) {
+    setSynced(accent)
+    setDraft(accent)
+  }
+
+  return (
+    <div className="flex flex-col gap-1.5">
+      <label htmlFor="accent" className="text-xs font-medium text-zinc-500">
+        Accent color
+      </label>
+      <div className="flex h-9 items-center gap-2 rounded-lg bg-white px-1.5 ring-1 ring-zinc-900/10 focus-within:ring-2 focus-within:ring-accent/70">
+        <input
+          type="color"
+          aria-label="Pick accent color"
+          value={accent}
+          onChange={(e) => onChange(e.target.value)}
+          className="size-6 shrink-0 cursor-pointer rounded-md border-0 bg-transparent p-0 [&::-moz-color-swatch]:rounded-md [&::-moz-color-swatch]:border-0 [&::-webkit-color-swatch]:rounded-md [&::-webkit-color-swatch]:border-0 [&::-webkit-color-swatch-wrapper]:p-0"
+        />
+        <input
+          id="accent"
+          type="text"
+          value={draft}
+          onChange={(e) => {
+            setDraft(e.target.value)
+            const hex = toHex(e.target.value)
+            if (hex && hex !== accent) onChange(hex)
+          }}
+          onBlur={() => setDraft(accent)}
+          spellCheck={false}
+          autoComplete="off"
+          maxLength={9}
+          className="min-w-0 flex-1 bg-transparent font-mono text-[13px] text-zinc-600 outline-none"
+        />
+      </div>
+      <p className="text-xs text-zinc-400">Used for text selection and focus rings.</p>
     </div>
   )
 }

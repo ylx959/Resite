@@ -27,8 +27,10 @@ html {
 }
 
 ::selection {
-  color: white;
-  background-color: var(--color-accent);
+  color: var(--color-accent);
+  text-decoration: underline wavy var(--color-accent);
+  text-decoration-thickness: 0.8px;
+  text-underline-offset: 0.2em;
 }
 
 @media (prefers-reduced-motion: reduce) {

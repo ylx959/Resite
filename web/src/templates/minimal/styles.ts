@@ -44,7 +44,12 @@ body {
   overflow-x: hidden;
 }
 
-::selection { color: #fff; background-color: var(--accent); }
+::selection {
+  color: var(--accent);
+  text-decoration: underline wavy var(--accent);
+  text-decoration-thickness: 0.8px;
+  text-underline-offset: 0.2em;
+}
 
 a { color: inherit; text-decoration: inherit; }
 ul { list-style: none; }

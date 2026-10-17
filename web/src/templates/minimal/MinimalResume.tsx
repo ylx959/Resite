@@ -15,7 +15,7 @@ import { parseInline } from '@/utils/inline'
 import { isExternal, safeHref, safeImageSrc } from '@/utils/url'
 import { anchor, PARAGRAPH_BREAK } from '../anchors'
 import { isShownLink, visibleSections } from '../content'
-import { MARK_COLOR, MARK_PATH, MARK_VIEWBOX } from '../mark'
+import { MARK_COLOR, MARK_VIEWBOX } from '../mark'
 
 /**
  * The Minimal template: myResume's layout, driven by Resume data.
@@ -320,8 +320,8 @@ function Mark({ icon }: { icon: string }) {
   if (src) return <img className="cv-mark" src={src} alt="" {...anchor('icon')} />
   return (
     <svg className="cv-mark" viewBox={MARK_VIEWBOX} aria-hidden="true" {...anchor('icon')}>
-      <rect width="38" height="24" rx="6" fill={MARK_COLOR} />
-      <path d={MARK_PATH} fill="white" />
+      <rect width="38" height="40" rx="19" fill="white" />
+      <circle cx="19" cy="20" r="17" fill={MARK_COLOR} />
     </svg>
   )
 }

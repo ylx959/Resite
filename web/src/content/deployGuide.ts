@@ -12,7 +12,7 @@ export type GuideStep = {
 export const deploySteps: GuideStep[] = [
   {
     title: 'Download your website',
-    body: 'Select "Download website" in Resite. You get resume-website.zip: a complete site with index.html, a stylesheet, a small script and your images.',
+    body: 'Select "Download website" in Resite. You get resume-website.zip: a complete site with index.html, a stylesheet, a small script and your images. Resite also opens Vercel Drop in a new tab.',
   },
   {
     title: 'Extract the files (optional)',

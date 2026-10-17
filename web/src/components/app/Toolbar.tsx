@@ -6,10 +6,13 @@ import { Button } from '../ui/Button'
 import { ConfirmIconButton } from '../ui/ConfirmButton'
 import { Download, Globe, Mark, Reset, Upload } from '../ui/icons'
 
+const VERCEL_DROP_URL = 'https://vercel.com/drop'
+
 export type ToolbarActions = {
   importJson: (file: File) => void
   exportJson: () => void
-  exportWebsite: () => Promise<void>
+  /** Resolves true once the ZIP is downloading. */
+  exportWebsite: () => Promise<boolean>
   reset: () => void
   openGuide: () => void
 }
@@ -19,10 +22,17 @@ export function Toolbar({ save, actions }: { save: SaveStatus; actions: ToolbarA
   const fileInput = useRef<HTMLInputElement>(null)
   const [exporting, setExporting] = useState(false)
 
+  /** Downloads the ZIP and opens Vercel Drop beside it, ready for the upload. */
   const download = async () => {
+    // Open the tab now, inside the click, or popup blockers stop it; point it at Vercel only once the ZIP exists.
+    const vercelTab = window.open('', '_blank')
     setExporting(true)
     try {
-      await actions.exportWebsite()
+      const ok = await actions.exportWebsite()
+      if (vercelTab && ok) {
+        vercelTab.opener = null
+        vercelTab.location.href = VERCEL_DROP_URL
+      } else vercelTab?.close()
     } finally {
       setExporting(false)
     }

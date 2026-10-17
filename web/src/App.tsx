@@ -66,9 +66,11 @@ export default function App() {
     exportWebsite: async () => {
       try {
         downloadBlob(await exportWebsite(resume), 'resume-website.zip')
-        setNotice({ tone: 'ok', text: 'Website downloaded. Open "How to publish" to put it online.', open: true })
+        setNotice({ tone: 'ok', text: 'Website downloaded. Drag resume-website.zip into the Vercel tab to put it online.', open: true })
+        return true
       } catch {
         setNotice({ tone: 'error', text: 'Packaging the website failed. Try again, or remove recently uploaded images.', open: true })
+        return false
       }
     },
     reset: () => {

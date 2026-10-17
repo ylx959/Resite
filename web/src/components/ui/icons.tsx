@@ -1,5 +1,5 @@
 import type { ReactNode, SVGProps } from 'react'
-import { MARK_COLOR, MARK_PATH, MARK_VIEWBOX } from '@/templates/mark'
+import { MARK_COLOR, MARK_VIEWBOX } from '@/templates/mark'
 
 /** 16px line icons, stroke 1.5, drawn to match the resume template's link icons. */
 function Svg({ children, ...props }: SVGProps<SVGSVGElement> & { children: ReactNode }) {
@@ -23,6 +23,7 @@ function Svg({ children, ...props }: SVGProps<SVGSVGElement> & { children: React
 
 type P = SVGProps<SVGSVGElement>
 
+export const Check = (p: P) => <Svg {...p}><path d="m3.5 8.5 3 3 6-7" /></Svg>
 export const ChevronDown = (p: P) => <Svg {...p}><path d="m4 6 4 4 4-4" /></Svg>
 export const ArrowUp = (p: P) => <Svg {...p}><path d="M8 13V3m0 0L4 7m4-4 4 4" /></Svg>
 export const ArrowDown = (p: P) => <Svg {...p}><path d="M8 3v10m0 0 4-4m-4 4-4-4" /></Svg>
@@ -82,11 +83,11 @@ export const ImageIcon = (p: P) => (
 )
 export const ExternalArrow = (p: P) => <Svg {...p}><path d="M12 10V4m0 0H6m6 0l-7.833 7.833" /></Svg>
 
-/** The app mark: an orange "Hired" badge. */
+/** The app mark: an orange dot in a white ring. */
 export const Mark = ({ className }: { className?: string }) => (
   <svg viewBox={MARK_VIEWBOX} aria-hidden="true" className={className}>
-    <rect width="38" height="24" rx="6" fill={MARK_COLOR} />
-    <path d={MARK_PATH} fill="white" />
+    <rect width="38" height="40" rx="19" fill="white" />
+    <circle cx="19" cy="20" r="17" fill={MARK_COLOR} />
   </svg>
 )
 

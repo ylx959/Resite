@@ -16,7 +16,10 @@ function hsvToHex({ h, s, v }: Hsv): string {
 }
 
 function hexToHsv(hex: string): Hsv {
-  const [r, g, b] = [1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 16) / 255)
+  const n = parseInt(hex.slice(1, 7), 16)
+  const r = ((n >> 16) & 255) / 255
+  const g = ((n >> 8) & 255) / 255
+  const b = (n & 255) / 255
   const max = Math.max(r, g, b)
   const d = max - Math.min(r, g, b)
   let h = 0
@@ -93,7 +96,13 @@ export function ColorPicker({
   }
   const onAreaKeyDown = (e: KeyboardEvent<HTMLDivElement>) => {
     const step = e.shiftKey ? 0.1 : 0.01
-    const move = { ArrowLeft: [-step, 0], ArrowRight: [step, 0], ArrowDown: [0, -step], ArrowUp: [0, step] }[e.key]
+    const moves: Record<string, [number, number]> = {
+      ArrowLeft: [-step, 0],
+      ArrowRight: [step, 0],
+      ArrowDown: [0, -step],
+      ArrowUp: [0, step],
+    }
+    const move = moves[e.key]
     if (!move) return
     e.preventDefault()
     set({ h: hsv.h, s: clamp(hsv.s + move[0]), v: clamp(hsv.v + move[1]) })

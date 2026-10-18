@@ -1,11 +1,12 @@
 'use client'
 
-import { useState, type ReactNode } from 'react'
+import { useRef, useState, type ReactNode } from 'react'
 import { useDispatch } from '@/hooks/EditorContext'
 import { anchor } from '@/templates/anchors'
 import { createItem } from '@/resume/sectionKinds'
 import type { Link, Resume } from '@/types/resume'
 import { fileToIcon } from '@/utils/images'
+import { ColorPicker } from '../ui/ColorPicker'
 import { Switch, TextField } from '../ui/Field'
 import { Mark } from '../ui/icons'
 import { AddSection } from './AddSection'
@@ -101,10 +102,11 @@ function toHex(input: string): string | null {
   return `#${(hex.length === 3 ? hex.replace(/./g, (c) => c + c) : hex).toLowerCase()}`
 }
 
-/** Swatch picker plus a hex field you can type or paste into; commits only valid colors. */
+/** Swatch that opens a picker below the field, plus a hex field you can type or paste into; commits only valid colors. */
 function AccentField({ accent, onChange }: { accent: string; onChange: (accent: string) => void }) {
   const [draft, setDraft] = useState(accent)
   const [synced, setSynced] = useState(accent)
+  const field = useRef<HTMLDivElement>(null)
   if (accent !== synced) {
     setSynced(accent)
     setDraft(accent)
@@ -115,14 +117,8 @@ function AccentField({ accent, onChange }: { accent: string; onChange: (accent: 
       <label htmlFor="accent" className="text-xs font-medium text-zinc-500">
         Accent color
       </label>
-      <div className="flex h-9 items-center gap-2 rounded-lg bg-white px-1.5 ring-1 ring-zinc-900/10 focus-within:ring-2 focus-within:ring-accent/70">
-        <input
-          type="color"
-          aria-label="Pick accent color"
-          value={accent}
-          onChange={(e) => onChange(e.target.value)}
-          className="size-6 shrink-0 cursor-pointer rounded-md border-0 bg-transparent p-0 [&::-moz-color-swatch]:rounded-md [&::-moz-color-swatch]:border-0 [&::-webkit-color-swatch]:rounded-md [&::-webkit-color-swatch]:border-0 [&::-webkit-color-swatch-wrapper]:p-0"
-        />
+      <div ref={field} className="flex h-9 items-center gap-2 rounded-lg bg-white px-1.5 ring-1 ring-zinc-900/10 focus-within:ring-2 focus-within:ring-accent/70">
+        <ColorPicker label="Pick accent color" value={accent} onChange={onChange} anchor={field} />
         <input
           id="accent"
           type="text"
@@ -148,7 +144,7 @@ function Group({ title, hint, children }: { title: string; hint: string; childre
   return (
     <section aria-labelledby={`group-${title}`}>
       <header className="mb-5">
-        <h2 id={`group-${title}`} className="text-[13px] font-semibold tracking-tight text-zinc-900">
+        <h2 id={`group-${title}`} className="text-base font-semibold tracking-tight text-accent">
           {title}
         </h2>
         <p className="mt-0.5 text-[13px] text-zinc-500">{hint}</p>

@@ -144,7 +144,7 @@ function Group({ title, hint, children }: { title: string; hint: string; childre
   return (
     <section aria-labelledby={`group-${title}`}>
       <header className="mb-5">
-        <h2 id={`group-${title}`} className="text-base font-semibold tracking-tight text-accent">
+        <h2 id={`group-${title}`} className="text-base font-semibold tracking-tight text-zinc-900">
           {title}
         </h2>
         <p className="mt-0.5 text-[13px] text-zinc-500">{hint}</p>

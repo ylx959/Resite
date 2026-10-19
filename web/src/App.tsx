@@ -125,22 +125,30 @@ export default function App() {
         >
           {panel.collapsed && <CollapsedPanel icon={<Sidebar />} onExpand={() => panel.setCollapsed(false)} />}
 
-          <main
-            aria-label="Editor"
-            {...editing.trackProps}
-            className={`relative min-h-0 w-full overflow-y-auto overscroll-contain transition-opacity lg:w-[var(--editor-w,var(--editor-w-saved))] lg:shrink-0 ${
-              pane === 'edit' ? 'block' : 'hidden'
-            } ${panel.collapsed ? 'lg:hidden' : 'lg:block'}`}
+          {/* Desktop: this wrapper animates its width to 0 and clips, while `main` keeps the full panel
+              width (scrollbar included) and slides left, so the editor moves out instead of reflowing. */}
+          <div
+            className={`contents transition-[width,visibility] duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] motion-reduce:transition-none lg:flex lg:shrink-0 lg:overflow-hidden ${
+              panel.collapsed ? 'lg:invisible lg:w-0' : 'lg:w-[var(--editor-w,var(--editor-w-saved))]'
+            }`}
           >
-            <div className="sticky top-0 z-10 hidden h-11 items-center justify-between border-b border-zinc-900/6 bg-paper/90 pr-3 pl-5 backdrop-blur-sm sm:pl-8 lg:flex">
-              <span className="text-xs font-medium text-zinc-500">Editor</span>
-              <IconButton label="Collapse editor" tone="accent" onClick={() => panel.setCollapsed(true)}>
-                <Sidebar />
-              </IconButton>
-            </div>
-            <Editor resume={resume} />
-            <MobileFileActions actions={actions} />
-          </main>
+            <main
+              aria-label="Editor"
+              {...editing.trackProps}
+              className={`relative min-h-0 w-full overflow-y-auto overscroll-contain transition-[opacity,translate] duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] motion-reduce:transition-none lg:block lg:w-[var(--editor-w,var(--editor-w-saved))] lg:shrink-0 ${
+                pane === 'edit' ? 'block' : 'hidden'
+              } ${panel.collapsed ? 'lg:-translate-x-full' : ''}`}
+            >
+              <div className="sticky top-0 z-10 hidden h-11 items-center justify-between border-b border-zinc-900/6 bg-paper/90 pr-3 pl-5 backdrop-blur-sm sm:pl-8 lg:flex">
+                <span className="text-xs font-medium text-zinc-500">Editor</span>
+                <IconButton label="Collapse editor" tone="accent" onClick={() => panel.setCollapsed(true)}>
+                  <Sidebar />
+                </IconButton>
+              </div>
+              <Editor resume={resume} />
+              <MobileFileActions actions={actions} />
+            </main>
+          </div>
 
           {!panel.collapsed && (
             <PanelResizer shell={shell} width={panel.width} onResize={panel.setWidth} onCollapse={() => panel.setCollapsed(true)} />

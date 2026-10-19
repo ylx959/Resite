@@ -46,7 +46,9 @@ html {
    and show the drag cursor everywhere. */
 [data-resizing] { cursor: col-resize; user-select: none; }
 [data-resizing] iframe { pointer-events: none; }
-[data-collapsing] > main { opacity: 0.4; }
+[data-collapsing] main { opacity: 0.4; }
+/* The panel width follows the pointer while dragging; only the collapse/expand toggle animates it. */
+[data-resizing] > div:has(> main) { transition: none; }
 
 /* Browser autofill paints filled inputs light blue. Keep our own field colors:
    the UA background is !important, so delay its transition forever instead

@@ -25,6 +25,7 @@ type P = SVGProps<SVGSVGElement>
 
 export const Check = (p: P) => <Svg {...p}><path d="m3.5 8.5 3 3 6-7" /></Svg>
 export const ChevronDown = (p: P) => <Svg {...p}><path d="m4 6 4 4 4-4" /></Svg>
+export const ChevronUpDown = (p: P) => <Svg {...p}><path d="m5 6 3-3 3 3m-6 4 3 3 3-3" /></Svg>
 export const ArrowUp = (p: P) => <Svg {...p}><path d="M8 13V3m0 0L4 7m4-4 4 4" /></Svg>
 export const ArrowDown = (p: P) => <Svg {...p}><path d="M8 3v10m0 0 4-4m-4 4-4-4" /></Svg>
 export const Plus = (p: P) => <Svg {...p}><path d="M8 3.5v9M3.5 8h9" /></Svg>

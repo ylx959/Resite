@@ -70,10 +70,12 @@ export function Toolbar({ save, account, actions }: { save: SaveStatus; account:
       {/* Right: publishing. */}
       <div className="flex items-center gap-1 justify-self-end">
         <AccountButton account={account} actions={actions} />
-        <Button variant="ghost" size="sm" icon={<Globe />} onClick={actions.openGuide}>
-          <span className="hidden sm:inline">How to publish</span>
-          <span className="sm:hidden">Publish</span>
-        </Button>
+        <HoverHint title="Go live, step by step" hint="A five-minute guide to putting your site on a free Vercel account. No coding needed.">
+          <Button variant="ghost" size="sm" icon={<Globe />} onClick={actions.openGuide}>
+            <span className="hidden sm:inline">How to publish</span>
+            <span className="sm:hidden">Publish</span>
+          </Button>
+        </HoverHint>
         <HoverHint title="Get your website" hint="Packs your resume into a ready-to-host site (.zip) and opens Vercel Drop, so you can drag it in to go live.">
           <Button variant="primary" icon={<Download />} onClick={download} disabled={exporting} aria-busy={exporting}>
             {exporting ? 'Packaging…' : <><span className="hidden sm:inline">Download website</span><span className="sm:hidden">ZIP</span></>}

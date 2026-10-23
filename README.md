@@ -1,105 +1,113 @@
 # Resite — Resume Website Builder
 
-A resume website without writing code: edit on the left, watch the page take shape on the right, then download a static site that is yours to host. Sign in and your progress follows you from one computer to the next.
+Build a resume website without writing code: edit on the left, watch the page take shape on the right, then download a static site that is yours to host. Sign in, and your progress follows you from one computer to the next.
 
-The design is [myResume](../myResume)'s, rewritten as a data-driven template — same type scale, spacing and chips, light theme only.
+The design comes from [myResume](../myResume), rewritten as a data-driven template with the same type scale, spacing and chips, in a light theme only.
 
 ## Highlights
 
+- Fully customizable content inside one fixed, carefully designed look
 - One React template renders both the live preview and the exported site, so what you see is what you download
 - The download is a finished static site in a ZIP, ready to drop on [Vercel Drop](https://vercel.com/drop)
-- Progress saves itself — in the browser, and once signed in, to your account, so another computer opens where you stopped
-- Every outside input is validated, and Row Level Security keeps each user to their own data
+- Progress saves itself: in the browser, and once you sign in, to your account, so another computer opens where you left off
+- Every outside input is validated, and Row Level Security limits each user to their own data
 
 ## Built with
 
-- [Next.js 16](https://nextjs.org/) App Router — the editor runs in the browser; Server Actions handle every write, Route Handlers the reads
-- [React 19](https://react.dev/) and TypeScript, strict
-- [Tailwind CSS v4](https://tailwindcss.com/) — no config file; design tokens live in `globals.css`'s `@theme` block. The exported template does not use it.
+- [Next.js 16](https://nextjs.org/) App Router — the editor runs in the browser; Server Actions handle every write and Route Handlers handle the reads
+- [React 19](https://react.dev/) and TypeScript in strict mode
+- [Tailwind CSS v4](https://tailwindcss.com/) — no config file; design tokens live in the `@theme` block of `globals.css`. The exported template doesn't use it.
 - [GSAP](https://gsap.com/) with `useGSAP`, for editor motion only — it never ships in an exported site
 - [JSZip](https://stuk.github.io/jszip/) to package the site in the browser
 - [Supabase](https://supabase.com/) — Auth for passwords, sessions and rate limits; Postgres for profiles and drafts; [`@supabase/ssr`](https://supabase.com/docs/guides/auth/server-side) to keep the session in cookies the server can read
-- [Vitest](https://vitest.dev/), in node, over the modules rather than the components
+- [Resend](https://resend.com/) — Supabase Auth's custom SMTP provider, which delivers the sign-up confirmation emails
+- [Vitest](https://vitest.dev/), running in Node and testing the modules rather than the components
 
 ## Local development
 
-This project requires Node.js 20.9 or newer.
+You need Node.js 20.9 or newer. Run every command from the repository root.
 
-```bash
-npm ci
-npm run dev        # http://localhost:3000
-```
+1. Clone the repository and install its dependencies:
 
-Create and inspect a production build:
+   ```bash
+   git clone https://github.com/ylx959/Resite.git
+   cd Resite
+   npm ci
+   ```
 
-```bash
-npm run build
-npm start -w @resite/web
-```
+2. Put your Supabase keys in `web/.env.local` (see [Supabase](#supabase) below). Without them, signing in and saving to an account will fail.
 
-```bash
-npm run typecheck   # tsc --noEmit — the build checks types too, this is just faster
-npm run test:run    # validation, editing, ZIP export, sign-up rules
-```
+3. Start the dev server:
 
-`backend/` is a FastAPI placeholder (`GET /health`), kept for LLM work to come. The app does not need it; `npm run dev:backend` starts it on :8000.
+   ```bash
+   npm run dev        # http://localhost:3000
+   ```
+
+4. Before you commit, check types and run the tests:
+
+   ```bash
+   npm run typecheck   # tsc --noEmit — the build checks types too, but this is faster
+   npm run test:run    # validation, editing, ZIP export, sign-up rules
+   ```
+
+5. To try a production build locally:
+
+   ```bash
+   npm run build
+   npm start -w @resite/web
+   ```
+
+`backend/` is a FastAPI placeholder (`GET /health`) kept for upcoming LLM work. The app doesn't need it; `npm run dev:backend` starts it on :8000.
 
 ### Supabase
 
-Everything Supabase-side lives in `web/supabase/`, and the CLI is run from `web/`.
+Everything lives in `web/supabase/`; run the CLI from `web/`.
 
-Keys go in `web/.env.local` (git-ignored), from **Project Settings → API**:
+1. Copy the keys from **Project Settings → API** into `web/.env.local`:
 
-```bash
-NEXT_PUBLIC_SUPABASE_URL=https://<project-ref>.supabase.co
-NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=sb_publishable_...   # never the secret key — nothing here needs it
-```
+   ```bash
+   NEXT_PUBLIC_SUPABASE_URL=https://<project-ref>.supabase.co
+   NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=sb_publishable_...   # never the secret key
+   ```
 
-Change a table:
+2. Link the project and create the tables:
 
-```bash
-supabase migration new <name>   # 1. creates a file in supabase/migrations/ — write the SQL there
-                                #    e.g. supabase migration new add_template_choice
-supabase db push                # 2. apply it to the database
-```
+   ```bash
+   supabase login
+   supabase link --project-ref <project-ref>
+   supabase db push
+   ```
 
-Add an Edge Function:
+3. Under **Authentication → URL Configuration**, set the Site URL (`http://localhost:3000`) and add `/auth/callback` to the Redirect URLs. To skip the confirmation email while developing, turn off **Email → Confirm email**.
 
-```bash
-supabase functions new <name>      # creates supabase/functions/<name>/index.ts — Deno, outside the Next.js build
-supabase functions deploy <name>
-```
-
-First time only: `supabase login`, then `supabase link --project-ref <project-ref>`, then `supabase db push`.
-
-In the dashboard, **Authentication → URL Configuration** needs the Site URL (`http://localhost:3000` locally) and `/auth/callback` under Redirect URLs, or the confirmation email has nowhere to land. While developing, turning off **Authentication → Sign In / Providers → Email → Confirm email** skips the email entirely.
+To change a table, run `supabase migration new <name>`, write the SQL, then `supabase db push`. Never edit an applied migration. Edge Functions: `supabase functions new <name>`, then `supabase functions deploy <name>`.
 
 ## Using it
 
-1. Edit the profile, then each section — hide, reorder or delete from the controls on its right; **Add section** for your own.
-2. Write `[label](https://example.com)` anywhere in text for a link, and leave a blank line for a new paragraph.
-3. Sign in to keep progress in your account, or close the sheet and stay a guest — guests save in this browser only. **Sign out** clears this browser's copy; the account keeps it.
+1. Edit the profile, then each section. Use the controls on the right of a section to hide, reorder or delete it, and **Add section** to create your own.
+2. Write `[label](https://example.com)` anywhere in the text to add a link, and leave a blank line to start a new paragraph.
+3. Sign in to keep your progress in your account, or close the sheet and stay a guest. Guests save in this browser only. **Sign out** clears this browser's copy, but the account keeps it.
 4. **Save JSON** keeps a file backup, and **Import** loads one.
-5. **Download website**, then drop `resume-website.zip` on [vercel.com/drop](https://vercel.com/drop). **How to publish** in the app walks through each step.
+5. Click **Download website**, then drop `resume-website.zip` on [vercel.com/drop](https://vercel.com/drop). **How to publish** in the app walks you through each step.
 
 Resite never deploys anything for you. Each person hosts their own site.
 
 ## Deployment
 
-The app needs a Node.js runtime — Server Actions and Route Handlers run on the server — but keeps no state of its own, so any host that runs Next.js will do, Vercel included. The build command is `npm run build`.
+The app needs a Node.js runtime, because Server Actions and Route Handlers run on the server. It keeps no state of its own, though, so any host that runs Next.js will do, Vercel included. The build command is `npm run build`.
 
-The host needs the two `NEXT_PUBLIC_SUPABASE_*` variables, and Supabase needs the production `/auth/callback` added to its Redirect URLs.
+The host needs the two `NEXT_PUBLIC_SUPABASE_*` variables, and the production `/auth/callback` URL must be added to Supabase's Redirect URLs.
 
-Every response is sent with `frame-ancestors 'none'` and `X-Frame-Options: DENY`, so no other site can frame the sign-in form. The preview's iframe is unaffected — it is a `srcDoc`, which those headers do not reach.
+Every response is sent with `frame-ancestors 'none'` and `X-Frame-Options: DENY`, so no other site can frame the sign-in form. The preview's iframe is unaffected: it uses `srcDoc`, which those headers don't reach.
 
-Sign-in and sign-up rate limits are Supabase Auth's, set under **Authentication → Rate Limits**. Saves are not rate-limited; RLS and the 8 MB size check bound what one account can store.
+Sign-in and sign-up rate limits come from Supabase Auth and are set under **Authentication → Rate Limits**. Saves aren't rate-limited; RLS and the 8 MB size check limit what one account can store.
 
 ## Project structure
 
 ```text
 .
 ├── CONTEXT.md                 # The terms used in the code — Resume, Section, Edit anchor, Draft
-├── backend/                   # FastAPI placeholder, kept for LLM work to come
+├── backend/                   # FastAPI placeholder, kept for upcoming LLM work
 └── web/                       # The app: npm workspace @resite/web
     ├── next.config.ts         # Security headers, Server Action body limit
     ├── src/
@@ -117,7 +125,7 @@ Sign-in and sign-up rate limits are Supabase Auth's, set under **Authentication 
     │   └── types/             # The Resume shape, and the account as the browser sees it
     └── supabase/
         ├── migrations/        # The schema and its RLS policies, one SQL file per change — see Supabase above
-        └── functions/         # Edge Functions, one folder each, when there are some
+        └── functions/         # Edge Functions, one folder each, once there are any
 ```
 
 ## Rights

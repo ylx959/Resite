@@ -1,7 +1,8 @@
 'use client'
 
-import { useActionState, useEffect, useRef, useState, type InputHTMLAttributes } from 'react'
+import { useActionState, useEffect, useState, type InputHTMLAttributes } from 'react'
 import { signInAction, signUpAction, type AuthFormState } from '@/app/actions/auth'
+import { useModalDialog } from '@/hooks/useModalDialog'
 import type { AccountInfo } from '@/types/account'
 import { Collapsible } from '../editor/Collapsible'
 import { Button, IconButton } from '../ui/Button'
@@ -15,20 +16,9 @@ const idle: AuthFormState = { status: 'idle' }
 
 /** Sign in or create an account, in a centered native `<dialog>` that eases in and out. */
 export function AuthDialog({ open, onClose, onSignedIn }: { open: boolean; onClose: () => void; onSignedIn: (account: AccountInfo) => void }) {
-  const ref = useRef<HTMLDialogElement>(null)
+  // Forms are keyed by `opens`, so each visit starts clean while the closing animation still shows the old one.
+  const { props, opens: visit } = useModalDialog(open, onClose)
   const [mode, setMode] = useState<Mode>('sign-in')
-  /** Bumped on every open, so each visit starts with a clean form while the closing animation keeps the old one. */
-  const [visit, setVisit] = useState(0)
-
-  useEffect(() => {
-    const dialog = ref.current
-    if (!dialog) return
-    if (open && !dialog.open) {
-      setVisit((v) => v + 1)
-      dialog.showModal()
-    }
-    if (!open && dialog.open) dialog.close()
-  }, [open])
 
   const done = (account: AccountInfo) => {
     onSignedIn(account)
@@ -37,9 +27,7 @@ export function AuthDialog({ open, onClose, onSignedIn }: { open: boolean; onClo
 
   return (
     <dialog
-      ref={ref}
-      onClose={onClose}
-      onClick={(e) => e.target === e.currentTarget && onClose()}
+      {...props}
       aria-labelledby="auth-title"
       className="m-auto w-[min(24rem,calc(100vw-2rem))] translate-y-3 scale-95 rounded-2xl bg-paper p-0 text-zinc-900 opacity-0 shadow-[0_0_0_1px_rgb(24_24_27/0.08),0_24px_48px_-24px_rgb(24_24_27/0.35)] transition-[opacity,scale,translate,display,overlay] transition-discrete duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] open:translate-y-0 open:scale-100 open:opacity-100 starting:open:translate-y-3 starting:open:scale-95 starting:open:opacity-0 backdrop:bg-zinc-900/0 backdrop:backdrop-blur-none backdrop:transition-[background-color,backdrop-filter,display,overlay] backdrop:transition-discrete backdrop:duration-300 open:backdrop:bg-zinc-900/20 open:backdrop:backdrop-blur-[2px] starting:open:backdrop:bg-zinc-900/0 starting:open:backdrop:backdrop-blur-none"
     >

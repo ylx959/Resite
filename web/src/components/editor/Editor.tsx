@@ -50,7 +50,7 @@ export function Editor({ resume }: { resume: Resume }) {
               items={profile.links}
               noun="link"
               onOp={(op) => dispatch({ type: 'profileLinks', op })}
-              create={() => createItem('links') as Link}
+              create={() => createItem('links')}
               describe={(link) => link.label}
               empty="No header links. They sit beside your name."
               renderItem={(link, update) => <LinkFields link={link} update={update} />}

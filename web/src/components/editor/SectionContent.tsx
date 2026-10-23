@@ -6,8 +6,10 @@ import { createItem } from '@/resume/sectionKinds'
 import { anchor, splitBy } from '@/templates/anchors'
 import type {
   AnyItem,
+  ItemOf,
   Link,
   LinksSection,
+  ListSection,
   PeopleSection,
   Person,
   Section,
@@ -42,10 +44,10 @@ export function SectionContent({ section }: { section: Section }) {
   }
 }
 
-/** `onOp` for one section's items, narrowed to its item type. */
-function useItemOps<T extends AnyItem>(sectionId: string) {
+/** `onOp` for one section's items, typed by the section it is given. */
+function useItemOps<S extends ListSection>(section: S) {
   const dispatch = useDispatch()
-  return (op: ListOp<T>) => dispatch({ type: 'items', sectionId, op: op as ListOp<AnyItem> })
+  return (op: ListOp<ItemOf<S>>) => dispatch({ type: 'items', sectionId: section.id, op: op as ListOp<AnyItem> })
 }
 
 function TextEditor({ id, body }: { id: string; body: string }) {
@@ -69,8 +71,8 @@ function TimelineEditor({ section }: { section: TimelineSection }) {
     <ItemList<TimelineItem>
       items={section.items}
       noun="entry"
-      onOp={useItemOps<TimelineItem>(section.id)}
-      create={() => createItem('timeline') as TimelineItem}
+      onOp={useItemOps(section)}
+      create={() => createItem('timeline')}
       describe={(item) => item.title}
       empty="No entries yet. Add a job, school or project."
       renderItem={(item, update) => (
@@ -130,8 +132,8 @@ function TagsEditor({ section }: { section: TagsSection }) {
     <ItemList<TagGroup>
       items={section.items}
       noun="group"
-      onOp={useItemOps<TagGroup>(section.id)}
-      create={() => createItem('tags') as TagGroup}
+      onOp={useItemOps(section)}
+      create={() => createItem('tags')}
       describe={(group) => group.label}
       empty="No groups yet. Add one, like Languages or Tools."
       renderItem={(group, update) => (
@@ -161,8 +163,8 @@ function PeopleEditor({ section }: { section: PeopleSection }) {
       <ItemList<Person>
         items={section.items}
         noun="person"
-        onOp={useItemOps<Person>(section.id)}
-        create={() => createItem('people') as Person}
+        onOp={useItemOps(section)}
+        create={() => createItem('people')}
         describe={(person) => person.name}
         empty="No one here yet."
         renderItem={(person, update) => (
@@ -197,8 +199,8 @@ function LinksEditor({ section }: { section: LinksSection }) {
     <ItemList<Link>
       items={section.items}
       noun="link"
-      onOp={useItemOps<Link>(section.id)}
-      create={() => createItem('links') as Link}
+      onOp={useItemOps(section)}
+      create={() => createItem('links')}
       describe={(link) => link.label}
       empty="No links yet. Add your email, GitHub or LinkedIn."
       renderItem={(link, update) => <LinkFields link={link} update={update} />}

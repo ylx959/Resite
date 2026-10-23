@@ -15,8 +15,8 @@ import { SectionContent } from './SectionContent'
 const countLabel = (section: Section) => {
   if (section.kind === 'text') return section.body.trim() ? `${section.body.trim().split(/\s+/).length} words` : 'Empty'
   const n = section.items.length
-  const noun = sectionKinds[section.kind].itemNoun
-  return n === 0 ? 'Empty' : `${n} ${noun === 'person' ? (n === 1 ? 'person' : 'people') : n === 1 ? noun : `${noun === 'entry' ? 'entries' : `${noun}s`}`}`
+  const { itemNoun, itemNounPlural } = sectionKinds[section.kind]
+  return n === 0 ? 'Empty' : `${n} ${n === 1 ? itemNoun : itemNounPlural}`
 }
 
 /** One section in the editor: a header row with its controls, and a collapsible body. */

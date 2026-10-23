@@ -1,9 +1,9 @@
 'use client'
 
 import { useRef, useState } from 'react'
-import type { SaveStatus } from '@/hooks/useResumeStore'
+import type { SaveStatus } from '@/utils/resumeSync'
 import type { AccountInfo } from '@/types/account'
-import { Button } from '../ui/Button'
+import { Button, type ButtonProps } from '../ui/Button'
 import { ConfirmIconButton } from '../ui/ConfirmButton'
 import { Download, Globe, Mark, Reset, Upload, User } from '../ui/icons'
 
@@ -22,7 +22,6 @@ export type ToolbarActions = {
 
 /** App header: brand, save state, account, and the file actions. */
 export function Toolbar({ save, account, actions }: { save: SaveStatus; account: AccountInfo | null; actions: ToolbarActions }) {
-  const fileInput = useRef<HTMLInputElement>(null)
   const [exporting, setExporting] = useState(false)
 
   /** Downloads the ZIP and opens Vercel Drop beside it, ready for the upload. */
@@ -45,22 +44,9 @@ export function Toolbar({ save, account, actions }: { save: SaveStatus; account:
     <header className="grid h-14 shrink-0 grid-cols-[1fr_auto] items-center gap-3 border-b border-zinc-900/8 bg-paper/90 px-4 backdrop-blur-sm sm:px-5 md:grid-cols-[1fr_auto_1fr]">
       {/* Left: file actions (wider screens; small screens get them under the editor). */}
       <div className="hidden items-center gap-1 justify-self-start md:flex">
-        <input
-          ref={fileInput}
-          type="file"
-          accept="application/json,.json"
-          className="sr-only"
-          tabIndex={-1}
-          aria-hidden="true"
-          onChange={(e) => {
-            const file = e.target.files?.[0]
-            if (file) actions.importJson(file)
-            e.target.value = ''
-          }}
-        />
-        <Button variant="ghost" size="sm" icon={<Upload />} onClick={() => fileInput.current?.click()}>
+        <ImportButton variant="ghost" size="sm" onFile={actions.importJson}>
           Import
-        </Button>
+        </ImportButton>
         <Button variant="ghost" size="sm" onClick={actions.exportJson}>
           Save JSON
         </Button>
@@ -93,25 +79,11 @@ export function Toolbar({ save, account, actions }: { save: SaveStatus; account:
 
 /** Secondary file actions for small screens, where the toolbar has no room for them. */
 export function MobileFileActions({ actions }: { actions: ToolbarActions }) {
-  const fileInput = useRef<HTMLInputElement>(null)
   return (
     <div className="flex flex-wrap items-center gap-2 border-t border-zinc-900/8 px-5 py-5 md:hidden">
-      <input
-        ref={fileInput}
-        type="file"
-        accept="application/json,.json"
-        className="sr-only"
-        tabIndex={-1}
-        aria-hidden="true"
-        onChange={(e) => {
-          const file = e.target.files?.[0]
-          if (file) actions.importJson(file)
-          e.target.value = ''
-        }}
-      />
-      <Button size="sm" icon={<Upload />} onClick={() => fileInput.current?.click()}>
+      <ImportButton size="sm" onFile={actions.importJson}>
         Import JSON
-      </Button>
+      </ImportButton>
       <Button size="sm" onClick={actions.exportJson}>
         Save JSON
       </Button>
@@ -122,6 +94,32 @@ export function MobileFileActions({ actions }: { actions: ToolbarActions }) {
         </ConfirmIconButton>
       </span>
     </div>
+  )
+}
+
+/** A button that opens the file picker for a resume JSON file, through a hidden `<input type="file">`. */
+function ImportButton({ onFile, children, ...button }: Omit<ButtonProps, 'onClick' | 'icon'> & { onFile: (file: File) => void }) {
+  const input = useRef<HTMLInputElement>(null)
+  return (
+    <>
+      <input
+        ref={input}
+        type="file"
+        accept="application/json,.json"
+        className="sr-only"
+        tabIndex={-1}
+        aria-hidden="true"
+        onChange={(e) => {
+          const file = e.target.files?.[0]
+          if (file) onFile(file)
+          // Cleared so picking the same file again still fires `change`.
+          e.target.value = ''
+        }}
+      />
+      <Button {...button} icon={<Upload />} onClick={() => input.current?.click()}>
+        {children}
+      </Button>
+    </>
   )
 }
 

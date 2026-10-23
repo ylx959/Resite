@@ -2,26 +2,18 @@
 
 import { useEffect, useRef, useState, type KeyboardEvent, type PointerEvent } from 'react'
 import { deployNotes, deploySteps } from '@/content/deployGuide'
+import { useModalDialog } from '@/hooks/useModalDialog'
 import { IconButton } from '../ui/Button'
 import { Close, ExternalArrow } from '../ui/icons'
 
 /** Step-by-step Vercel instructions in a side sheet (native `<dialog>`: focus trap and Esc for free). */
 export function DeployGuide({ open, onClose }: { open: boolean; onClose: () => void }) {
-  const ref = useRef<HTMLDialogElement>(null)
+  const { props } = useModalDialog(open, onClose)
   const [width, setWidth] = useSheetWidth()
-
-  useEffect(() => {
-    const dialog = ref.current
-    if (!dialog) return
-    if (open && !dialog.open) dialog.showModal()
-    if (!open && dialog.open) dialog.close()
-  }, [open])
 
   return (
     <dialog
-      ref={ref}
-      onClose={onClose}
-      onClick={(e) => e.target === e.currentTarget && onClose()}
+      {...props}
       aria-labelledby="deploy-title"
       style={{ width }}
       className="m-0 ml-auto h-[100dvh] max-h-none max-w-full bg-paper p-0 text-zinc-900 shadow-[0_0_0_1px_rgb(24_24_27/0.08),-24px_0_48px_-24px_rgb(24_24_27/0.25)] backdrop:bg-zinc-900/20 backdrop:backdrop-blur-[2px] open:animate-[sheet-in_320ms_cubic-bezier(0.16,1,0.3,1)]"

@@ -43,6 +43,8 @@ The exact data shape lives in `web/src/types/resume.ts`; this file defines the t
 
 **`buildSite(resume)` / `zipSite(files)`** (`web/src/utils/exportWebsite.ts`): Resume in, site files out; then the ZIP. `renderToStaticMarkup` of the template — no string templating of user content. Data-URL images become files.
 
+**`createResumeSync({ local, account, fallback, onStatus })`** (`web/src/utils/resumeSync.ts`): where the Resume is saved and when. Always in localStorage; when signed in, also the account's Draft, whose copy wins on load. Owns the save delay, flushes pending edits before sign-out, and reports save status. `useResumeStore` only wires it to React.
+
 **`safeHref` / `safeImageSrc`** (`web/src/utils/url.ts`): every URL the template renders passes through these.
 
 **`anchor` / `anchorPathOf` / `findAnchor`** (`web/src/templates/anchors.ts`): Edit anchors — mark a region, read the focused field's path, resolve a path to the deepest rendered element.

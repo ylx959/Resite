@@ -123,4 +123,4 @@ Sign-in and sign-up rate limits are Supabase Auth's, set under **Authentication 
 
 ## Rights
 
-© 2026 Yang Linxuan. All rights reserved.
+© 2026 Yang Linxuan. Released under the [MIT License](LICENSE).

@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState, type CSSProperties } from 'react'
 import { DeployGuide } from '@/components/app/DeployGuide'
+import { AuthDialog } from '@/components/app/AuthDialog'
 import { CollapsedPanel, PanelResizer } from '@/components/app/PanelResizer'
 import { MobileFileActions, Toolbar, type ToolbarActions } from '@/components/app/Toolbar'
 import { Editor } from '@/components/editor/Editor'
@@ -31,14 +32,32 @@ const fileSlug = (resume: Resume) =>
 
 /** Resite: editor on the left, live preview on the right (tabs on small screens). */
 export default function App() {
-  const { resume, dispatch, save } = useResumeStore()
+  const { resume, dispatch, save, account, ready, signedIn, signOut } = useResumeStore()
   const [notice, setNotice] = useState<Notice | null>(null)
   const [guideOpen, setGuideOpen] = useState(false)
+  const [authOpen, setAuthOpen] = useState(false)
   const [pane, setPane] = useState<'edit' | 'preview'>('edit')
   const [device, setDevice] = useState<'desktop' | 'mobile'>('desktop')
   const panel = useEditorPanel()
   const editing = useEditingPath()
   const shell = useRef<HTMLDivElement>(null)
+
+  // A failed email-confirmation link comes back as `?auth=failed` (see app/auth/callback).
+  useEffect(() => {
+    const url = new URL(window.location.href)
+    if (url.searchParams.get('auth') !== 'failed') return
+    setNotice({ tone: 'error', text: 'That confirmation link has expired or was already used. Sign in, or create the account again.', open: true })
+    url.searchParams.delete('auth')
+    window.history.replaceState(null, '', url)
+  }, [])
+
+  // Guests are greeted with the sign-in dialog once per page load; closing it keeps them editing as a guest.
+  const greeted = useRef(false)
+  useEffect(() => {
+    if (!ready || greeted.current) return
+    greeted.current = true
+    if (!account) setAuthOpen(true)
+  }, [ready, account])
 
   useEffect(() => {
     if (!notice?.open) return
@@ -78,12 +97,17 @@ export default function App() {
       setNotice({ tone: 'ok', text: 'Reset to the sample resume.', open: true })
     },
     openGuide: () => setGuideOpen(true),
+    openSignIn: () => setAuthOpen(true),
+    signOut: async () => {
+      await signOut()
+      setNotice({ tone: 'ok', text: 'Signed out. Your progress stays in your account.', open: true })
+    },
   }
 
   return (
     <DispatchContext value={dispatch}>
       <div className="relative flex h-[100dvh] flex-col overflow-hidden bg-paper text-zinc-900">
-        <Toolbar save={save} actions={actions} />
+        <Toolbar save={save} account={account} actions={actions} />
 
         <div className="flex items-center justify-center border-b border-zinc-900/8 px-4 py-2 lg:hidden">
           <Segmented
@@ -179,6 +203,14 @@ export default function App() {
         </div>
 
         <DeployGuide open={guideOpen} onClose={() => setGuideOpen(false)} />
+        <AuthDialog
+          open={authOpen}
+          onClose={() => setAuthOpen(false)}
+          onSignedIn={(next) => {
+            void signedIn(next)
+            setNotice({ tone: 'ok', text: `Signed in as ${next.username}. Your progress is saved to your account.`, open: true })
+          }}
+        />
       </div>
     </DispatchContext>
   )

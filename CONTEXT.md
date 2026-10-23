@@ -1,13 +1,17 @@
 # Resite — Domain Context
 
-A browser-only tool that turns a **Resume** (JSON data) into a static resume website.
+A tool that turns a **Resume** (JSON data) into a static resume website. Editing happens in the browser; signed-in users' progress is also saved on the server.
 The design is the myResume site (`../myResume`), rewritten as a data-driven **Template**.
 
 The exact data shape lives in `web/src/types/resume.ts`; this file defines the terms.
 
 ## Glossary
 
-**Resume**: the whole document being edited. Profile + ordered Sections + Settings. Saved to localStorage, exported as JSON.
+**Resume**: the whole document being edited. Profile + ordered Sections + Settings. Saved to localStorage (and, when signed in, to the account as its **Draft**), exported as JSON.
+
+**Account**: a Supabase Auth user (email + password) plus a **profile** holding the username. Sign in with the email.
+
+**Draft**: an account's latest saved Resume, one per account, replaced on every autosave. Loaded on sign-in and page load, so progress follows the user between browsers.
 
 **Profile**: name, title, **Icon**, and the header **Links** beside the name.
 
@@ -42,5 +46,11 @@ The exact data shape lives in `web/src/types/resume.ts`; this file defines the t
 **`safeHref` / `safeImageSrc`** (`web/src/utils/url.ts`): every URL the template renders passes through these.
 
 **`anchor` / `anchorPathOf` / `findAnchor`** (`web/src/templates/anchors.ts`): Edit anchors — mark a region, read the focused field's path, resolve a path to the deepest rendered element.
+
+**`createSupabase()`** (`web/src/lib/supabase.ts`): a per-request Supabase client acting as the signed-in user (auth cookies via `@supabase/ssr`).
+
+**`checkSignup` / `currentAccount`** (`web/src/lib/auth.ts`): sign-up rules; the signed-in account with its username.
+
+**`saveDraft` / `loadDraft`** (`web/src/lib/drafts.ts`): the account's Draft; `saveDraft` runs input through `parseResume`.
 
 **`getTemplate(id)`** (`web/src/templates/index.ts`): the template registry. Add a design by adding an entry.

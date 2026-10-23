@@ -9,3 +9,7 @@ next-env.d.ts
 .venv/
 __pycache__/
 *.pyc
+
+
+# Local secrets (Supabase keys)
+.env*.local

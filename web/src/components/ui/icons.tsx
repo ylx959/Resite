@@ -99,3 +99,11 @@ export const Sidebar = (p: P) => (
     <path d="M6.25 2.75v10.5" />
   </Svg>
 )
+
+/** Head and shoulders: the account menu. */
+export const User = (p: P) => (
+  <Svg {...p}>
+    <circle cx="8" cy="5.5" r="2.75" />
+    <path d="M2.75 13.5c.6-2.4 2.7-4 5.25-4s4.65 1.6 5.25 4" />
+  </Svg>
+)

@@ -1,10 +1,11 @@
 import type { ButtonHTMLAttributes, ReactNode } from 'react'
 
-type Variant = 'primary' | 'secondary' | 'ghost' | 'danger'
+type Variant = 'primary' | 'secondary' | 'outline' | 'ghost' | 'danger'
 
 const variants: Record<Variant, string> = {
   primary: 'bg-accent text-white shadow-[inset_0_1px_0_rgb(255_255_255/0.2)] hover:bg-accent-hover disabled:bg-zinc-400',
   secondary: 'bg-white text-zinc-800 ring-1 ring-zinc-900/10 hover:bg-zinc-50 hover:ring-zinc-900/15',
+  outline: 'bg-accent/10 text-accent ring-1 ring-inset ring-accent hover:bg-accent/20 hover:text-accent-hover hover:ring-accent-hover disabled:bg-zinc-100 disabled:text-zinc-400 disabled:ring-zinc-300',
   ghost: 'text-zinc-600 hover:bg-zinc-900/5 hover:text-zinc-900',
   danger: 'bg-red-600 text-white hover:bg-red-700',
 }

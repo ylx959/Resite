@@ -2,9 +2,10 @@
 
 import { useRef, useState } from 'react'
 import type { SaveStatus } from '@/hooks/useResumeStore'
+import type { AccountInfo } from '@/types/account'
 import { Button } from '../ui/Button'
 import { ConfirmIconButton } from '../ui/ConfirmButton'
-import { Download, Globe, Mark, Reset, Upload } from '../ui/icons'
+import { Download, Globe, Mark, Reset, Upload, User } from '../ui/icons'
 
 const VERCEL_DROP_URL = 'https://vercel.com/drop'
 
@@ -15,10 +16,12 @@ export type ToolbarActions = {
   exportWebsite: () => Promise<boolean>
   reset: () => void
   openGuide: () => void
+  openSignIn: () => void
+  signOut: () => void
 }
 
-/** App header: brand, save state, and the file actions. */
-export function Toolbar({ save, actions }: { save: SaveStatus; actions: ToolbarActions }) {
+/** App header: brand, save state, account, and the file actions. */
+export function Toolbar({ save, account, actions }: { save: SaveStatus; account: AccountInfo | null; actions: ToolbarActions }) {
   const fileInput = useRef<HTMLInputElement>(null)
   const [exporting, setExporting] = useState(false)
 
@@ -70,11 +73,12 @@ export function Toolbar({ save, actions }: { save: SaveStatus; actions: ToolbarA
       <div className="flex min-w-0 items-center gap-2.5 md:justify-self-center">
         <Mark className="h-[13.2px] w-auto shrink-0" />
         <h1 className="truncate text-[14px] font-semibold tracking-tight text-zinc-900">Resite</h1>
-        <SaveIndicator save={save} />
+        <SaveIndicator save={save} toAccount={account !== null} />
       </div>
 
       {/* Right: publishing. */}
       <div className="flex items-center gap-1 justify-self-end">
+        <AccountButton account={account} actions={actions} />
         <Button variant="ghost" size="sm" icon={<Globe />} onClick={actions.openGuide}>
           <span className="hidden sm:inline">How to publish</span>
           <span className="sm:hidden">Publish</span>
@@ -121,10 +125,32 @@ export function MobileFileActions({ actions }: { actions: ToolbarActions }) {
   )
 }
 
-function SaveIndicator({ save }: { save: SaveStatus }) {
+/** "Sign in" for guests; the username and a confirm-to-sign-out for signed-in users. */
+function AccountButton({ account, actions }: { account: AccountInfo | null; actions: ToolbarActions }) {
+  if (!account) {
+    return (
+      <Button variant="ghost" size="sm" icon={<User />} onClick={actions.openSignIn}>
+        Sign in
+      </Button>
+    )
+  }
+  return (
+    <span className="inline-flex items-center gap-1" title={account.email}>
+      <span className="hidden max-w-32 items-center gap-1.5 truncate text-[13px] text-zinc-600 sm:inline-flex">
+        <User className="shrink-0 text-zinc-400" />
+        {account.username}
+      </span>
+      <Button variant="ghost" size="sm" onClick={actions.signOut}>
+        Sign out
+      </Button>
+    </span>
+  )
+}
+
+function SaveIndicator({ save, toAccount }: { save: SaveStatus; toAccount: boolean }) {
   const text = save.state === 'saved' ? 'Saved' : save.state === 'pending' ? 'Saving' : 'Not saved'
   return (
-    <span role="status" title={save.state === 'error' ? save.message : 'Saved in this browser'} className="hidden items-center gap-1.5 text-xs text-zinc-400 sm:inline-flex">
+    <span role="status" title={save.state === 'error' ? save.message : toAccount ? 'Saved to your account' : 'Saved in this browser'} className="hidden items-center gap-1.5 text-xs text-zinc-400 sm:inline-flex">
       <span
         aria-hidden="true"
         className={`size-1.5 rounded-full ${

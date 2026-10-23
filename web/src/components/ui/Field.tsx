@@ -2,7 +2,7 @@
 
 import { useId, type InputHTMLAttributes, type ReactNode, type TextareaHTMLAttributes } from 'react'
 
-const control =
+export const control =
   'w-full rounded-lg bg-white px-3 text-[14px] text-zinc-900 ring-1 ring-zinc-900/10 transition-[box-shadow] duration-150 placeholder:text-zinc-400 hover:ring-zinc-900/20 focus:outline-none focus:ring-2 focus:ring-accent/70 aria-invalid:ring-red-500/70'
 
 /** Label above, control, then helper or error text below. */

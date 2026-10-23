@@ -1,149 +1,126 @@
-# Resite
+# Resite — Resume Website Builder
 
-Make a personal resume website without writing code. Edit on the left, watch the
-live preview on the right, then download a ready-to-host website as a ZIP.
+A resume website without writing code: edit on the left, watch the page take shape on the right, then download a static site that is yours to host. Sign in and your progress follows you from one computer to the next.
 
-The design comes from [myResume](../myResume): same type scale, spacing and chips.
-Light theme only.
+The design is [myResume](../myResume)'s, rewritten as a data-driven template — same type scale, spacing and chips, light theme only.
 
-## Run it
+## Highlights
+
+- One React template renders both the live preview and the exported site, so what you see is what you download
+- The download is a finished static site in a ZIP, ready to drop on [Vercel Drop](https://vercel.com/drop)
+- Progress saves itself — in the browser, and once signed in, to your account, so another computer opens where you stopped
+- Every outside input is validated, and Row Level Security keeps each user to their own data
+
+## Built with
+
+- [Next.js 16](https://nextjs.org/) App Router — the editor runs in the browser; Server Actions handle every write, Route Handlers the reads
+- [React 19](https://react.dev/) and TypeScript, strict
+- [Tailwind CSS v4](https://tailwindcss.com/) — no config file; design tokens live in `globals.css`'s `@theme` block. The exported template does not use it.
+- [GSAP](https://gsap.com/) with `useGSAP`, for editor motion only — it never ships in an exported site
+- [JSZip](https://stuk.github.io/jszip/) to package the site in the browser
+- [Supabase](https://supabase.com/) — Auth for passwords, sessions and rate limits; Postgres for profiles and drafts; [`@supabase/ssr`](https://supabase.com/docs/guides/auth/server-side) to keep the session in cookies the server can read
+- [Vitest](https://vitest.dev/), in node, over the modules rather than the components
+
+## Local development
+
+This project requires Node.js 20.9 or newer.
 
 ```bash
-npm install
+npm ci
 npm run dev        # http://localhost:3000
-./backend/dev.sh   # http://localhost:8000 (creates .venv, installs deps, runs uvicorn)
 ```
 
-Other commands:
+Create and inspect a production build:
 
-| Command               | What it does                                          |
-| --------------------- | ----------------------------------------------------- |
-| `npm run dev:backend` | FastAPI backend via `backend/dev.sh` (:8000)          |
-| `npm run build`       | Static build of the creator into `web/out/`      |
-| `npm run typecheck`   | TypeScript check (all workspaces)                     |
-| `npm run test:run`    | Unit tests (validation, editing, ZIP export)          |
-
-## Repository layout
-
-npm workspaces monorepo:
-
-```
-web/       @resite/web — the Next.js creator (everything below lives here)
-backend/   FastAPI API server (placeholder: GET /health, docs at /docs)
+```bash
+npm run build
+npm start -w @resite/web
 ```
 
-## Use it
+```bash
+npm run typecheck   # tsc --noEmit — the build checks types too, this is just faster
+npm run test:run    # validation, editing, ZIP export, sign-up rules
+```
 
-1. **Edit.** Fill in your name and title, then open each section to edit it.
-   Use the controls on a section's right to hide, reorder or delete it.
-   Choose **Add section** to add a custom one.
-2. **Links in text.** Write `[label](https://example.com)` in any summary, highlight
-   or paragraph. Leave a blank line between paragraphs.
-3. **Your work saves itself** in this browser. Choose **Save JSON** to keep a backup,
-   and **Import** to load it again (on any computer).
-4. **Download website.** You get `resume-website.zip`:
+`backend/` is a FastAPI placeholder (`GET /health`), kept for LLM work to come. The app does not need it; `npm run dev:backend` starts it on :8000.
 
-   ```
-   resume-website/
-   ├── index.html
-   ├── assets/
-   │   ├── style.css
-   │   ├── script.js
-   │   └── images/
-   └── README.md
-   ```
+### Supabase
 
-5. **Publish.** Go to [vercel.com/drop](https://vercel.com/drop), sign in to your own
-   free Vercel account, drop the ZIP in, and choose **Deploy**. You get an address
-   like `your-name.vercel.app`. The **How to publish** button in the app walks
-   through every step.
+Everything Supabase-side lives in `web/supabase/`, and the CLI is run from `web/`.
+
+Keys go in `web/.env.local` (git-ignored), from **Project Settings → API**:
+
+```bash
+NEXT_PUBLIC_SUPABASE_URL=https://<project-ref>.supabase.co
+NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=sb_publishable_...   # never the secret key — nothing here needs it
+```
+
+Change a table:
+
+```bash
+supabase migration new <name>   # 1. creates a file in supabase/migrations/ — write the SQL there
+                                #    e.g. supabase migration new add_template_choice
+supabase db push                # 2. apply it to the database
+```
+
+Add an Edge Function:
+
+```bash
+supabase functions new <name>      # creates supabase/functions/<name>/index.ts — Deno, outside the Next.js build
+supabase functions deploy <name>
+```
+
+First time only: `supabase login`, then `supabase link --project-ref <project-ref>`, then `supabase db push`.
+
+In the dashboard, **Authentication → URL Configuration** needs the Site URL (`http://localhost:3000` locally) and `/auth/callback` under Redirect URLs, or the confirmation email has nowhere to land. While developing, turning off **Authentication → Sign In / Providers → Email → Confirm email** skips the email entirely.
+
+## Using it
+
+1. Edit the profile, then each section — hide, reorder or delete from the controls on its right; **Add section** for your own.
+2. Write `[label](https://example.com)` anywhere in text for a link, and leave a blank line for a new paragraph.
+3. Sign in to keep progress in your account, or close the sheet and stay a guest — guests save in this browser only. **Sign out** clears this browser's copy; the account keeps it.
+4. **Save JSON** keeps a file backup, and **Import** loads one — `web/examples/raymond-yang.resume.json` is a full example.
+5. **Download website**, then drop `resume-website.zip` on [vercel.com/drop](https://vercel.com/drop). **How to publish** in the app walks through each step.
 
 Resite never deploys anything for you. Each person hosts their own site.
 
-## Your own resume
+## Deployment
 
-`web/examples/raymond-yang.resume.json` is the myResume content in this format.
-Choose **Import** in the app to load it.
+The app needs a Node.js runtime — Server Actions and Route Handlers run on the server — but keeps no state of its own, so any host that runs Next.js will do, Vercel included. The build command is `npm run build`.
 
-## How it's built
+The host needs the two `NEXT_PUBLIC_SUPABASE_*` variables, and Supabase needs the production `/auth/callback` added to its Redirect URLs.
 
-Next.js (static export), React, TypeScript, Tailwind CSS, JSZip. The creator runs
-entirely in the browser. Paths below are relative to `web/`.
+Every response is sent with `frame-ancestors 'none'` and `X-Frame-Options: DENY`, so no other site can frame the sign-in form. The preview's iframe is unaffected — it is a `srcDoc`, which those headers do not reach.
 
-- `src/types/resume.ts`: the resume data shape
-- `src/resume/`: editing logic (pure reducer, section kinds, sample data)
-- `src/templates/`: the resume design. One React component renders both the
-  live preview and the exported `index.html`, so they always match.
-- `src/utils/exportWebsite.ts`: builds the site files and the ZIP
-- `src/utils/validation.ts`: checks imported JSON before using it
-- `src/components/`: the editor UI
+Sign-in and sign-up rate limits are Supabase Auth's, set under **Authentication → Rate Limits**. Saves are not rate-limited; RLS and the 8 MB size check bound what one account can store.
 
-See `CONTEXT.md` for the terms used in the code.
+## Project structure
 
-## Project architecture
-
-One resume object drives everything. The editor changes it, the preview and the
-download both render it with the same template.
-
-```
-          Import JSON ──► parseResume ──┐
-          localStorage ─► parseResume ──┤
-                                        ▼
-  Editor ──dispatch──► resumeReducer ──► Resume ──► Template (React)
-                                          │              │
-                                          ▼              ├──► Live preview (iframe)
-                                    localStorage         └──► buildSite ──► ZIP
-                                   (autosave, 300ms)
-```
-
-```
-src/
-├── app/              Next.js entry: layout, page, global styles and color tokens
-├── App.tsx           The shell: toolbar, editor panel, preview, notices
-├── types/resume.ts   The Resume data shape (profile, sections, settings)
-├── resume/           Editing logic, no React
-│   ├── reducer.ts      resumeReducer: every change to the resume
-│   ├── listOps.ts      add / update / remove / move for any list
-│   ├── sectionKinds.ts the section kinds (text, timeline, tags, people, links)
-│   └── sample.ts       the sample resume shown on first visit and after Reset
-├── templates/        The resume design
-│   ├── index.ts        template registry (getTemplate)
-│   ├── content.ts      which sections and links are shown
-│   ├── SiteDocument.tsx the full <html> page for the export
-│   └── minimal/        the Minimal template: React component + plain CSS
-├── utils/
-│   ├── validation.ts   parseResume: checks imported or saved JSON
-│   ├── storage.ts      load, save and clear in localStorage
-│   ├── exportWebsite.ts buildSite and zipSite: resume in, ZIP out
-│   ├── url.ts          safeHref / safeImageSrc: blocks unsafe links
-│   ├── inline.ts       [label](url) links and paragraphs in text
-│   └── images.ts       shrinks uploaded photos before saving
-├── hooks/
-│   ├── useResumeStore.ts loads the saved resume and autosaves it
-│   ├── useEditorPanel.ts editor width and collapsed state
-│   └── EditorContext.tsx gives components dispatch
-├── components/
-│   ├── editor/         the section forms, lists and Add section
-│   ├── preview/        ResumePreview: renders the template in an iframe
-│   ├── app/            Toolbar, panel resizer, How to publish sheet
-│   └── ui/             Button, fields, icons, confirm-to-delete button
-└── content/
-    └── deployGuide.ts  publishing steps, used in the app and in the ZIP README
+```text
+.
+├── CONTEXT.md                 # The terms used in the code — Resume, Section, Edit anchor, Draft
+├── backend/                   # FastAPI placeholder, kept for LLM work to come
+└── web/                       # The app: npm workspace @resite/web
+    ├── next.config.ts         # Security headers, Server Action body limit
+    ├── src/
+    │   ├── App.tsx            # The shell: toolbar, editor, preview, notices, sign-in sheet
+    │   ├── app/
+    │   │   ├── actions/       # Server Actions — sign up, sign in, sign out, save progress
+    │   │   ├── api/resume/    # Who is signed in, and their saved progress
+    │   │   └── auth/callback/ # Where the confirmation email lands
+    │   ├── lib/               # Server only — the Supabase client, sign-up rules, drafts
+    │   ├── resume/            # Editing logic, no React — resumeReducer and the section kinds
+    │   ├── templates/         # The resume design — one pure component for preview and export
+    │   ├── components/        # Editor forms, the preview, toolbar, dialogs, UI parts
+    │   ├── hooks/             # useResumeStore loads and autosaves; panel and focus state
+    │   ├── utils/             # parseResume, storage, buildSite and the ZIP, URL safety
+    │   └── types/             # The Resume shape, and the account as the browser sees it
+    ├── supabase/
+    │   ├── migrations/        # The schema and its RLS policies, one SQL file per change — see Supabase above
+    │   └── functions/         # Edge Functions, one folder each, when there are some
+    └── examples/              # A complete resume to import
 ```
 
-A few rules keep it simple and safe:
+## Rights
 
-- **Changes go through `resumeReducer`.** Components never edit the resume
-  directly; they call `dispatch` from `useDispatch()`.
-- **Outside data goes through `parseResume`.** Imported files and saved data are
-  checked and repaired before the app uses them.
-- **Preview and download share one template.** The template components are pure
-  (no hooks, no browser APIs), so they render the same in the iframe and in
-  `renderToStaticMarkup` for the export.
-- **No unsafe HTML.** User text is rendered by React, never as raw HTML, and every
-  link and image goes through `safeHref` / `safeImageSrc`.
-- **The export stands alone.** The template uses plain CSS with `cv-` classes, not
-  Tailwind, so `style.css` works without a build step. GSAP is only for editor
-  animations and never ships in the export.
-- **Adding a template** means adding a folder under `src/templates/` and an
-  entry in `src/templates/index.ts`.
+© 2026 Yang Linxuan. All rights reserved.

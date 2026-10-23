@@ -3,6 +3,7 @@
   Supabase Auth "Confirm signup" email. Paste into Dashboard → Authentication → Emails → Templates → Confirm signup
   (subject: "Confirm your Resite account"); config.toml points local dev at this file.
   Email clients strip <style>, SVG and most layout CSS: tables and inline styles only.
+  Links use token_hash, not the default ConfirmationURL: a PKCE link fails when opened in another browser (see app/auth/callback).
 -->
 <html lang="en">
   <head>
@@ -11,15 +12,16 @@
     <meta name="color-scheme" content="light" />
     <title>Confirm your Resite account</title>
   </head>
-  <body style="margin:0;padding:0;background:#f4f4f5;">
+  <body style="margin:0;padding:0;background:#ffffff;">
     <!-- Inbox preview text. -->
     <div style="display:none;max-height:0;overflow:hidden;">One click and your resume site is saved to your account.</div>
-    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#f4f4f5;">
+    <!-- No card: content sits directly on the page in a narrow, left-aligned column. -->
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#ffffff;">
       <tr>
-        <td align="center" style="padding:40px 16px;">
-          <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="max-width:480px;background:#fcfcfc;border:1px solid #e4e4e7;border-radius:16px;">
+        <td align="center" style="padding:48px 24px;">
+          <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="max-width:480px;">
             <tr>
-              <td style="padding:40px 40px 0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;">
+              <td style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;">
                 <!-- The favicon's orange dot, drawn with a cell: SVG is blocked in Gmail. -->
                 <table role="presentation" cellpadding="0" cellspacing="0" border="0">
                   <tr>
@@ -30,39 +32,37 @@
               </td>
             </tr>
             <tr>
-              <td style="padding:32px 40px 0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;">
-                <h1 style="margin:0;font-size:24px;line-height:1.25;font-weight:600;color:#18181b;letter-spacing:-0.02em;">Confirm your email</h1>
+              <td style="padding-top:48px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;">
+                <h1 style="margin:0;font-size:28px;line-height:1.2;font-weight:600;color:#18181b;letter-spacing:-0.02em;">Confirm your email</h1>
                 <p style="margin:16px 0 0;font-size:15px;line-height:1.6;color:#52525b;">
                   Hi{{ if .Data.username }} {{ .Data.username }}{{ end }}, thanks for signing up. Confirm <strong style="color:#18181b;font-weight:600;">{{ .Email }}</strong> to finish creating your account and keep your resume saved.
                 </p>
               </td>
             </tr>
             <tr>
-              <td style="padding:28px 40px 0;">
+              <td style="padding-top:32px;">
                 <table role="presentation" cellpadding="0" cellspacing="0" border="0">
                   <tr>
                     <td style="background:#ff4a00;border-radius:999px;">
-                      <a href="{{ .ConfirmationURL }}" style="display:inline-block;padding:13px 28px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;font-size:15px;font-weight:600;color:#ffffff;text-decoration:none;border-radius:999px;">Confirm email</a>
+                      <a href="{{ .SiteURL }}/auth/callback?token_hash={{ .TokenHash }}&amp;type=email" style="display:inline-block;padding:13px 28px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;font-size:15px;font-weight:600;color:#ffffff;text-decoration:none;border-radius:999px;">Confirm email</a>
                     </td>
                   </tr>
                 </table>
               </td>
             </tr>
             <tr>
-              <td style="padding:28px 40px 0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;">
+              <td style="padding-top:32px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;">
                 <p style="margin:0;font-size:13px;line-height:1.6;color:#71717a;">
                   Open the link in the same browser you signed up in. If the button doesn't work, copy this address:
                 </p>
                 <p style="margin:8px 0 0;font-size:13px;line-height:1.5;word-break:break-all;">
-                  <a href="{{ .ConfirmationURL }}" style="color:#ff4a00;text-decoration:underline;">{{ .ConfirmationURL }}</a>
+                  <a href="{{ .SiteURL }}/auth/callback?token_hash={{ .TokenHash }}&amp;type=email" style="color:#ff4a00;text-decoration:underline;">{{ .SiteURL }}/auth/callback?token_hash={{ .TokenHash }}&amp;type=email</a>
                 </p>
               </td>
             </tr>
             <tr>
-              <td style="padding:32px 40px 40px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;">
-                <div style="border-top:1px solid #e4e4e7;padding-top:20px;font-size:12px;line-height:1.6;color:#a1a1aa;">
-                  Didn't sign up for Resite? Ignore this email and no account will be created.
-                </div>
+              <td style="padding-top:48px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;font-size:12px;line-height:1.6;color:#a1a1aa;">
+                Didn't sign up for Resite? Ignore this email and no account will be created.
               </td>
             </tr>
           </table>

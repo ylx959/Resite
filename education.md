@@ -360,7 +360,6 @@ npm run test:run
 - `validation.test.ts` → `fills defaults for missing optional fields`：缺欄位會補齊。
 - `validation.test.ts` → `regenerates missing and duplicate ids`：壞掉的 id 會修好。
 - `validation.test.ts` → `rejects ...`：各種該拒絕的情況和錯誤訊息。
-- `validation.test.ts` → `examples/raymond-yang.resume.json imports cleanly`：範例檔能匯入。
 - `storage.test.ts` → `round-trips a resume`：localStorage 存了再讀，完全不變。
 - `storage.test.ts` → `returns null for corrupt or invalid data`：壞掉的存檔不會讓 app 當掉。
 

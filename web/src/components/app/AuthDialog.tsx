@@ -6,7 +6,7 @@ import type { AccountInfo } from '@/types/account'
 import { Collapsible } from '../editor/Collapsible'
 import { Button, IconButton } from '../ui/Button'
 import { control, Field } from '../ui/Field'
-import { Close } from '../ui/icons'
+import { Close, Eye, EyeOff } from '../ui/icons'
 import { Segmented } from '../ui/Segmented'
 
 type Mode = 'sign-in' | 'sign-up'
@@ -97,7 +97,7 @@ function SignInForm({ onDone }: { onDone: (account: AccountInfo) => void }) {
   return (
     <form action={submit} className="flex flex-col gap-3.5">
       <Input label="Email" name="email" type="email" autoComplete="email" defaultValue={values.email} required autoFocus />
-      <Input label="Password" name="password" type="password" autoComplete="current-password" required />
+      <PasswordInput label="Password" name="password" autoComplete="current-password" required />
       <FormError state={state} />
       <Button type="submit" variant="outline" disabled={pending} aria-busy={pending} className="mt-1">
         {pending ? 'Signing in…' : 'Sign in'}
@@ -128,10 +128,9 @@ function SignUpForm({ onDone }: { onDone: (account: AccountInfo) => void }) {
         helper="3–30 letters, numbers, - or _."
         required
       />
-      <Input
+      <PasswordInput
         label="Password"
         name="password"
-        type="password"
         autoComplete="new-password"
         error={fieldError('password')}
         helper="At least 8 characters."
@@ -150,6 +149,28 @@ function Input({ label, helper, error, ...props }: InputHTMLAttributes<HTMLInput
   return (
     <Field label={label} helper={helper} error={error}>
       {(a11y) => <input {...a11y} {...props} className={`${control} h-9`} />}
+    </Field>
+  )
+}
+
+/** `Input` for passwords, with an eye button that shows or hides what was typed. Starts hidden on every visit. */
+function PasswordInput({ label, helper, error, ...props }: Omit<InputHTMLAttributes<HTMLInputElement>, 'type'> & { label: string; helper?: string; error?: string }) {
+  const [shown, setShown] = useState(false)
+  return (
+    <Field label={label} helper={helper} error={error}>
+      {(a11y) => (
+        <div className="relative">
+          <input {...a11y} {...props} type={shown ? 'text' : 'password'} className={`${control} h-9 pr-10`} />
+          <IconButton
+            label={shown ? 'Hide password' : 'Show password'}
+            aria-pressed={shown}
+            onClick={() => setShown((v) => !v)}
+            className="absolute top-1/2 right-1 -translate-y-1/2"
+          >
+            {shown ? <EyeOff /> : <Eye />}
+          </IconButton>
+        </div>
+      )}
     </Field>
   )
 }

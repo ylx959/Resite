@@ -53,11 +53,3 @@ describe('parseResumeJson', () => {
     expect(parseResumeJson('{ nope')).toEqual({ ok: false, error: 'This file is not valid JSON.' })
   })
 })
-
-describe('examples/raymond-yang.resume.json', () => {
-  it('imports cleanly', async () => {
-    const { readFileSync } = await import('node:fs')
-    const result = parseResumeJson(readFileSync('examples/raymond-yang.resume.json', 'utf8'))
-    expect(result.ok).toBe(true)
-  })
-})

@@ -79,7 +79,7 @@ In the dashboard, **Authentication → URL Configuration** needs the Site URL (`
 1. Edit the profile, then each section — hide, reorder or delete from the controls on its right; **Add section** for your own.
 2. Write `[label](https://example.com)` anywhere in text for a link, and leave a blank line for a new paragraph.
 3. Sign in to keep progress in your account, or close the sheet and stay a guest — guests save in this browser only. **Sign out** clears this browser's copy; the account keeps it.
-4. **Save JSON** keeps a file backup, and **Import** loads one — `web/examples/raymond-yang.resume.json` is a full example.
+4. **Save JSON** keeps a file backup, and **Import** loads one.
 5. **Download website**, then drop `resume-website.zip` on [vercel.com/drop](https://vercel.com/drop). **How to publish** in the app walks through each step.
 
 Resite never deploys anything for you. Each person hosts their own site.
@@ -115,10 +115,9 @@ Sign-in and sign-up rate limits are Supabase Auth's, set under **Authentication 
     │   ├── hooks/             # useResumeStore loads and autosaves; panel and focus state
     │   ├── utils/             # parseResume, storage, buildSite and the ZIP, URL safety
     │   └── types/             # The Resume shape, and the account as the browser sees it
-    ├── supabase/
-    │   ├── migrations/        # The schema and its RLS policies, one SQL file per change — see Supabase above
-    │   └── functions/         # Edge Functions, one folder each, when there are some
-    └── examples/              # A complete resume to import
+    └── supabase/
+        ├── migrations/        # The schema and its RLS policies, one SQL file per change — see Supabase above
+        └── functions/         # Edge Functions, one folder each, when there are some
 ```
 
 ## Rights

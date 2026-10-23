@@ -5,6 +5,7 @@ import type { SaveStatus } from '@/utils/resumeSync'
 import type { AccountInfo } from '@/types/account'
 import { Button, type ButtonProps } from '../ui/Button'
 import { ConfirmIconButton } from '../ui/ConfirmButton'
+import { HoverHint } from '../ui/HoverHint'
 import { Download, Globe, Mark, Reset, Upload, User } from '../ui/icons'
 
 const VERCEL_DROP_URL = 'https://vercel.com/drop'
@@ -44,12 +45,16 @@ export function Toolbar({ save, account, actions }: { save: SaveStatus; account:
     <header className="grid h-14 shrink-0 grid-cols-[1fr_auto] items-center gap-3 border-b border-zinc-900/8 bg-paper/90 px-4 backdrop-blur-sm sm:px-5 md:grid-cols-[1fr_auto_1fr]">
       {/* Left: file actions (wider screens; small screens get them under the editor). */}
       <div className="hidden items-center gap-1 justify-self-start md:flex">
-        <ImportButton variant="ghost" size="sm" onFile={actions.importJson}>
-          Import
-        </ImportButton>
-        <Button variant="ghost" size="sm" onClick={actions.exportJson}>
-          Save JSON
-        </Button>
+        <HoverHint title="Import a resume file" hint="Open a .json file you saved from Resite. It replaces everything in the editor.">
+          <ImportButton variant="ghost" size="sm" onFile={actions.importJson}>
+            Import
+          </ImportButton>
+        </HoverHint>
+        <HoverHint title="Save a backup" hint="Downloads your resume as a .json file. Import it later, or on another computer, to keep editing.">
+          <Button variant="ghost" size="sm" onClick={actions.exportJson}>
+            Save JSON
+          </Button>
+        </HoverHint>
         <ConfirmIconButton label="Reset to the sample resume" confirmLabel="Reset all?" onConfirm={actions.reset}>
           <Reset />
         </ConfirmIconButton>
@@ -69,9 +74,11 @@ export function Toolbar({ save, account, actions }: { save: SaveStatus; account:
           <span className="hidden sm:inline">How to publish</span>
           <span className="sm:hidden">Publish</span>
         </Button>
-        <Button variant="primary" icon={<Download />} onClick={download} disabled={exporting} aria-busy={exporting}>
-          {exporting ? 'Packaging…' : <><span className="hidden sm:inline">Download website</span><span className="sm:hidden">ZIP</span></>}
-        </Button>
+        <HoverHint title="Get your website" hint="Packs your resume into a ready-to-host site (.zip) and opens Vercel Drop, so you can drag it in to go live.">
+          <Button variant="primary" icon={<Download />} onClick={download} disabled={exporting} aria-busy={exporting}>
+            {exporting ? 'Packaging…' : <><span className="hidden sm:inline">Download website</span><span className="sm:hidden">ZIP</span></>}
+          </Button>
+        </HoverHint>
       </div>
     </header>
   )
@@ -127,9 +134,11 @@ function ImportButton({ onFile, children, ...button }: Omit<ButtonProps, 'onClic
 function AccountButton({ account, actions }: { account: AccountInfo | null; actions: ToolbarActions }) {
   if (!account) {
     return (
-      <Button variant="ghost" size="sm" icon={<User />} onClick={actions.openSignIn}>
-        Sign in
-      </Button>
+      <HoverHint title="Keep your work" hint="Sign in to save your current edits to your account. They'll be here the next time you sign in.">
+        <Button variant="ghost" size="sm" icon={<User />} onClick={actions.openSignIn}>
+          Sign in
+        </Button>
+      </HoverHint>
     )
   }
   return (
